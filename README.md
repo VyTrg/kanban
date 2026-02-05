@@ -1,17 +1,6 @@
 # Trello clone with NextJS
 >[!NOTE] 
 >Read `docs/` before implementation
-## Project Structure
-
-* **app**: File-system based routes
-* **components**: Components and widgets
-* **database**: DB connection & querying
-* **emails**: HTML email templates
-* **functions**: React server functions
-* **lib**: Cross-cutting utilities
-* **public**: Images and static assets
-
----
 
 ## Commit Message Convention
 
