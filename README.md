@@ -1,5 +1,6 @@
 # Trello clone with NextJS
-> [!CAPTION] Read `docs/` before implementation
+>[!NOTE] 
+>Read `docs/` before implementation
 ## Project Structure
 
 * **app**: File-system based routes
