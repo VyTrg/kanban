@@ -1,7 +1,7 @@
 
-`app (frontend)
-packages(backend)
-controller
-models
+`app (web)
+packages
+  db
+  api
 ...
 `
