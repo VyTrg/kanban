@@ -1,10 +1,31 @@
-# Commit Message Convention
+# Tài liệu dự án
+## Danh mục Tài liệu Chi tiết
+
+###  Requirements
+| File | Mô tả | Trạng thái |
+|------|-------|-----------|
+| user-stories.md | User Stories & Acceptance Criteria  |  |
+| glossary.md | Bảng thuật ngữ domain  | |
+
+### Architecture
+| File | Mô tả | Trạng thái |
+|------|-------|-----------|
+| api.md | API specification  |  |
+| database.md | Database design, ERD, indexes |  |
+
+
+###  Quality
+| File | Mô tả | Trạng thái |
+|------|-------|-----------|
+| quality-test-strategy.md | Test strategy, Feed Load Testing, Moderation Testing |  |
+
+## Commit Message Convention
 
 Messages must follow the format:  
 `<type>: <description>`  
 `[optional body]`
 
-## Types
+### Types
 * **feat**: A new feature
 * **fix**: A bug fix
 * **docs**: Documentation changes only
