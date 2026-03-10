@@ -46,7 +46,10 @@
     - **Given:** Có một lời mời đang ở trạng thái chờ (Pending)
     - **When:** Tôi nhấn nút "Thu hồi" (Revoke)
     - **Then:** Liên kết mời bị vô hiệu hóa và người dùng đó không thể tham gia qua link cũ
-
+- **AC4: Lời mời tự động thu hồi**
+    - **Given:** Có một lời mời đang ở trạng thái chờ (Pending)
+    - **When:** Sau 12 giờ kể từ khi lời mời được tạo, người nhận được lời mời không chấp nhận.
+    - **Then:** Liên kết mời bị vô hiệu hóa và người dùng đó không thể tham gia qua link cũ
 ---
 
 ## US-: Phân quyền vai trò 
@@ -60,6 +63,7 @@
     - **Then:** - **Owner:** Có toàn quyền (xóa workspace, cài đặt, quản lý thành viên).
         - **Member:** Có thể tạo/sửa board và card nhưng không được xóa workspace.
         - **Observer:** Chỉ có quyền xem (Read-only), không được chỉnh sửa nội dung.
+    - **Then:** Người dùng chỉ nhận được tương tác theo đúng vai trò.
 - **AC2: Thay đổi vai trò**
     - **Given:** Tôi là Owner của workspace
     - **When:** Tôi thay đổi vai trò của một thành viên trong danh sách quản lý
@@ -88,7 +92,7 @@
 
 ---
 
-## US-: Tùy chỉnh thương hiệu & Cài đặt
+## US-: Tùy chỉnh & Cài đặt
 **Là một** Trưởng nhóm,  
 **Tôi muốn** tùy chỉnh các cài đặt của workspace như logo và giao diện,  
 **Để** không gian làm việc phù hợp với bộ nhận diện của nhóm.
