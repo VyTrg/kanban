@@ -14,7 +14,11 @@ src
 ```
 > [!NOTE]
 > Thêm navigator theo sidebar/app-sidebar.tsx (chứ sidebar chính)
+>
 > Với mỗi navigator sử dụng router của nextjs để nav
+>
 > Component thêm mới nên để trong thư mục. VD: sidebar
+>
 > Tham khảo code tại 'https://github.com/kanbn/kan/blob/main/apps/web/src/components/SideNavigation.tsx'
+>
 > Do đã refractor lại structure nên lưu ý

@@ -35,6 +35,7 @@ Messages must follow the format:
 * **test**: Adding missing tests or correcting existing tests
 * **build**: Changes that affect the build system or external dependencies
 * **ci**: Changes to CI configuration files and scripts
+* **ui**: A new ui
 
 ## Description 
 * **Length**: Keep it under 50 characters for readability on GitHub and other Git tools.
