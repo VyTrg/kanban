@@ -1,6 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { ThemeToggle } from "@/components/theme/theme-provider";
 
 const tabs = [
 	"Account",
@@ -24,7 +25,10 @@ export default function SettingsPage() {
 		<div className="min-h-screen bg-background text-foreground">
 			<div className="mx-auto flex max-w-5xl flex-col gap-8 px-6 py-10">
 				<header className="space-y-4">
-					<h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
+					<div className="flex items-center justify-between gap-3">
+						<h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
+						<ThemeToggle className="h-9 w-9" />
+					</div>
 					<nav className="flex flex-wrap gap-6 text-sm text-muted-foreground">
 						{tabs.map((tab) => (
 							<button
