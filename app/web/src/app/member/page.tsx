@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { WorkspaceCard } from "@/components/member/workspace-card";
 import { InsightCard } from "@/components/member/insight-card";
 import { MembersTable } from "@/components/member/members-table";
@@ -7,7 +8,7 @@ import { InvitationList } from "@/components/member/invitation-list";
 import { Button } from "@/components/ui/button";
 import { UserPlus } from "lucide-react";
 
-export default function Home() {
+export default function MemberPage() {
   const handleInviteMember = () => {
     console.log("Invite member clicked");
   };
@@ -26,26 +27,6 @@ export default function Home() {
 
   return (
     <div className="p-8 space-y-8">
-      {/* Header Section */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900">
-            Project Management
-          </h1>
-          <p className="text-slate-600 mt-1">
-            Workspace settings and team collaboration
-          </p>
-        </div>
-        <Button
-          onClick={handleInviteMember}
-          size="lg"
-          className="gap-2 w-full sm:w-auto"
-        >
-          <UserPlus className="h-4 w-4" />
-          Invite Member
-        </Button>
-      </div>
-
       {/* 2-Column Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column: Workspace Settings */}
@@ -66,6 +47,26 @@ export default function Home() {
 
         {/* Right Column: Members and Invitations */}
         <div className="lg:col-span-2 space-y-6">
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-slate-900">
+                Project Management
+              </h1>
+              <p className="text-slate-600 mt-1">
+                Workspace settings and team collaboration
+              </p>
+            </div>
+            <Button
+              onClick={handleInviteMember}
+              size="lg"
+              className="gap-2 w-full sm:w-auto"
+            >
+              <UserPlus className="h-4 w-4" />
+              Invite Member
+            </Button>
+          </div>
+
           {/* Members Table */}
           <div>
             <h2 className="text-lg font-semibold text-slate-900 mb-4">
