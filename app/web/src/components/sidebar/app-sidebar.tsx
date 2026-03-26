@@ -30,10 +30,10 @@ import {
 import { Button } from "@/components/ui/button";
 
 const navItems = [
-  { title: "Boards", icon: Table, href: "#" },
-  { title: "Templates", icon: LayoutPanelTop, href: "#" },
-  { title: "Members", icon: UsersRound, href: "#" },
-  { title: "Settings", icon: Settings, href: "#" },
+  { title: "Boards", icon: Table, href: "/" },
+  { title: "Templates", icon: LayoutPanelTop, href: "/templates" },
+  { title: "Members", icon: UsersRound, href: "/member" },
+  { title: "Settings", icon: Settings, href: "/settings" },
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
