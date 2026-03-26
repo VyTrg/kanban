@@ -6,11 +6,20 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 type Theme = "light" | "dark";
+export type FontSize = "small" | "medium" | "large";
+
+const FONT_SIZE_MAP: Record<FontSize, string> = {
+  small: "14px",
+  medium: "16px",
+  large: "18px",
+};
 
 type ThemeContextValue = {
   theme: Theme;
   toggleTheme: () => void;
   setTheme: (theme: Theme) => void;
+  fontSize: FontSize;
+  setFontSize: (fontSize: FontSize) => void;
 };
 
 const ThemeContext = React.createContext<ThemeContextValue | undefined>(
@@ -23,24 +32,40 @@ function applyTheme(theme: Theme) {
   root.dataset.theme = theme;
 }
 
+function applyFontSize(fontSize: FontSize) {
+  const root = document.documentElement;
+  root.style.setProperty("--app-font-size", FONT_SIZE_MAP[fontSize]);
+  root.style.fontSize = FONT_SIZE_MAP[fontSize];
+  root.dataset.fontSize = fontSize;
+}
+
 export function ThemeProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const [theme, setThemeState] = React.useState<Theme>("light");
+  const [fontSize, setFontSizeState] = React.useState<FontSize>("medium");
 
   React.useEffect(() => {
     const stored = window.localStorage.getItem("theme");
     if (stored === "light" || stored === "dark") {
       setThemeState(stored);
       applyTheme(stored);
-      return;
+    } else {
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      const initial = prefersDark ? "dark" : "light";
+      setThemeState(initial);
+      applyTheme(initial);
     }
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const initial = prefersDark ? "dark" : "light";
-    setThemeState(initial);
-    applyTheme(initial);
+
+    const storedFontSize = window.localStorage.getItem("font-size");
+    if (storedFontSize === "small" || storedFontSize === "medium" || storedFontSize === "large") {
+      setFontSizeState(storedFontSize);
+      applyFontSize(storedFontSize);
+    } else {
+      applyFontSize("medium");
+    }
   }, []);
 
   const setTheme = React.useCallback((next: Theme | ((prev: Theme) => Theme)) => {
@@ -52,13 +77,22 @@ export function ThemeProvider({
     });
   }, []);
 
+  const setFontSize = React.useCallback((next: FontSize | ((prev: FontSize) => FontSize)) => {
+    setFontSizeState((prev) => {
+      const resolved = typeof next === "function" ? next(prev) : next;
+      applyFontSize(resolved);
+      window.localStorage.setItem("font-size", resolved);
+      return resolved;
+    });
+  }, []);
+
   const toggleTheme = React.useCallback(() => {
     setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   }, [setTheme]);
 
   const value = React.useMemo(
-    () => ({ theme, toggleTheme, setTheme }),
-    [theme, toggleTheme, setTheme],
+    () => ({ theme, toggleTheme, setTheme, fontSize, setFontSize }),
+    [theme, toggleTheme, setTheme, fontSize, setFontSize],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

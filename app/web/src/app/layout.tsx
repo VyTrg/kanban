@@ -27,13 +27,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full antialiased">
-      <body className="min-h-full">
-        <ThemeProvider>
+      <ThemeProvider>
+        <body className="min-h-full">
           <SidebarProvider>
             <AppSidebar>{children}</AppSidebar>
           </SidebarProvider>
-        </ThemeProvider>
-      </body>
+        </body>
+      </ThemeProvider>
     </html>
   );
 }
