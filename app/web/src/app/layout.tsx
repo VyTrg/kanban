@@ -26,11 +26,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full antialiased">
-      <body className="min-h-full flex ">
+      <body className="h-full">
         <SidebarProvider>
-          <AppSidebar>
-            <main className="flex-1 overflow-auto ">{children}</main>
-          </AppSidebar>
+          <AppSidebar />
+          <main className="flex flex-col flex-1 overflow-auto bg-slate-50">
+            {children}
+          </main>
         </SidebarProvider>
       </body>
     </html>
