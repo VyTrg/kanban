@@ -1,11 +1,11 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { cn } from "@/lib/utils";
 import { ThemeToggle, useTheme } from "@/components/theme/theme-provider";
 import { Button } from "@/components/ui/button";
-import { Select } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
 import { Globe, Type } from "lucide-react";
@@ -33,62 +33,45 @@ export default function SettingsPage() {
 				return (
 					<section className="overflow-hidden rounded-2xl border border-border/60 bg-card/60 shadow-lg backdrop-blur">
 						<div className="space-y-8 px-8 py-8">
-							<div className="space-y-3">
-								<Label className="font-semibold" htmlFor="workspace-name">
-									Workspace name
-								</Label>
-								<Input
-									id="workspace-name"
-									defaultValue="vót bây"
-									className="h-10 text-sm"
-								/>
-							</div>
+							<Field>
+								<FieldLabel htmlFor="workspace-name">Workspace name</FieldLabel>
+								<Input id="workspace-name" placeholder="Enter workspace name" />
+								<FieldDescription>Shown across your workspace.</FieldDescription>
+							</Field>
 
-							<div className="space-y-3">
-								<Label className="font-semibold" htmlFor="workspace-url">
-									Workspace URL
-								</Label>
+							<Field>
+								<FieldLabel htmlFor="workspace-url">Workspace URL</FieldLabel>
 								<div className="grid gap-3 md:grid-cols-[1fr_2fr]">
-									<Input
-										id="workspace-url-prefix"
-										defaultValue="kan.bn/"
-										className="h-10 text-sm"
-									/>
-									<Input
-										id="workspace-url"
-										defaultValue="d4jo7qfwzayc"
-										className="h-10 text-sm"
-									/>
+									<Input id="workspace-url-prefix" defaultValue="kan.bn/" />
+									<Input id="workspace-url" placeholder="your-workspace" />
 								</div>
-							</div>
+								<FieldDescription>Use only letters, numbers, and dashes.</FieldDescription>
+							</Field>
 
-							<div className="space-y-3">
-								<Label className="font-semibold" htmlFor="workspace-description">
-									Workspace description
-								</Label>
-								<Input
-									id="workspace-description"
-									placeholder=""
-									className="h-10 text-sm"
-								/>
-							</div>
+							<Field>
+								<FieldLabel htmlFor="workspace-description">Workspace description</FieldLabel>
+								<Input id="workspace-description" placeholder="Add a short description" />
+								<FieldDescription>Optional, helps members recognize the space.</FieldDescription>
+							</Field>
 
-							<div className="space-y-3">
-								<Label className="font-semibold" htmlFor="week-start">
-									Week start day
-								</Label>
-								<div className="max-w-xs">
-									<Select id="week-start" defaultValue="Monday">
-										<option>Sunday</option>
-										<option>Monday</option>
-										<option>Tuesday</option>
-										<option>Wednesday</option>
-										<option>Thursday</option>
-										<option>Friday</option>
-										<option>Saturday</option>
-									</Select>
-								</div>
-							</div>
+							<Field>
+								<FieldLabel htmlFor="week-start">Week start day</FieldLabel>
+								<Select defaultValue="monday">
+									<SelectTrigger id="week-start" className="w-full">
+										<SelectValue placeholder="Select a day" />
+									</SelectTrigger>
+									<SelectContent>
+										<SelectItem value="sunday">Sunday</SelectItem>
+										<SelectItem value="monday">Monday</SelectItem>
+										<SelectItem value="tuesday">Tuesday</SelectItem>
+										<SelectItem value="wednesday">Wednesday</SelectItem>
+										<SelectItem value="thursday">Thursday</SelectItem>
+										<SelectItem value="friday">Friday</SelectItem>
+										<SelectItem value="saturday">Saturday</SelectItem>
+									</SelectContent>
+								</Select>
+								<FieldDescription>Used for calendar views.</FieldDescription>
+							</Field>
 
 							<div className="flex flex-col gap-3 border-y border-border/60 py-6 md:flex-row md:items-center md:justify-between">
 								<div className="space-y-1">
@@ -120,7 +103,8 @@ export default function SettingsPage() {
 							<div className="flex items-center gap-4">
 								<div className="h-16 w-16 overflow-hidden rounded-full border border-border">
 									<img
-										src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80"
+//										src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80"
+										src="https://images.unsplash.com/photo-1626808642875-0aa545482dfb?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
 										alt="Profile avatar"
 										className="h-full w-full object-cover"
 									/>
@@ -133,22 +117,21 @@ export default function SettingsPage() {
 								</div>
 							</div>
 
-							<div className="space-y-3">
-								<Label className="font-semibold" htmlFor="display-name">
+							<Field>
+								<FieldLabel htmlFor="display-name">
 									Display name
-								</Label>
+								</FieldLabel>
 								<Input
 									id="display-name"
 									defaultValue="Chiko"
-									className="h-10 text-sm"
 								/>
-								<p className="text-xs text-muted-foreground">
+								<FieldDescription>
 									Pick a name to be shown to other workspace members.
-								</p>
-							</div>
+								</FieldDescription>
+							</Field>
 
-							<div className="space-y-2">
-								<Label className="font-semibold">Email</Label>
+							<Field>
+								<FieldLabel className="font-semibold">Email</FieldLabel>
 								<div className="flex items-center justify-between rounded-lg border border-input/60 bg-muted/20 px-3 py-2 text-sm text-foreground">
 									<span className="text-muted-foreground">
 										haycuoinhieuhon1412@gmail.com
@@ -157,49 +140,56 @@ export default function SettingsPage() {
 										Verified
 									</span>
 								</div>
-							</div>
+								<FieldDescription>Your login email can’t be changed.</FieldDescription>
+							</Field>
 
 							<div className="grid gap-6 md:grid-cols-2">
-								<div className="space-y-3">
-									<Label className="font-semibold" htmlFor="language">
+								<Field>
+									<FieldLabel className="font-semibold" htmlFor="language">
 										Language
-									</Label>
+									</FieldLabel>
 									<div className="relative">
-										<Select id="language" defaultValue="English" className="pl-9">
-											{languages.map((language) => (
-												<option key={language}>{language}</option>
-											))}
+										<Select defaultValue="english">
+											<SelectTrigger id="language" className="w-full pl-9">
+												<SelectValue placeholder="Choose language" />
+											</SelectTrigger>
+											<SelectContent>
+												{languages.map((language) => (
+													<SelectItem key={language} value={language.toLowerCase()} className="capitalize">
+														{language}
+													</SelectItem>
+												))}
+											</SelectContent>
 										</Select>
 										<Globe className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
 									</div>
-									<p className="text-xs text-muted-foreground">
-										Choose your preferred language.
-									</p>
-								</div>
+									<FieldDescription>Choose your preferred language.</FieldDescription>
+								</Field>
 
-								<div className="space-y-3">
-									<Label className="font-semibold" htmlFor="font-size">
+								<Field>
+									<FieldLabel className="font-semibold" htmlFor="font-size">
 										Font size
-									</Label>
+									</FieldLabel>
 									<div className="relative">
 										<Select
-											id="font-size"
 											value={fontSize}
-											onChange={(e) => setFontSize(e.target.value as "small" | "medium" | "large")}
-											className="pl-9 capitalize"
+											onValueChange={(value) => setFontSize(value as "small" | "medium" | "large")}
 										>
-											{fontSizes.map((font) => (
-												<option key={font} value={font} className="capitalize">
-													{font}
-												</option>
-											))}
+											<SelectTrigger id="font-size" className="w-full pl-9 capitalize">
+												<SelectValue placeholder="Choose size" className="capitalize" />
+											</SelectTrigger>
+											<SelectContent>
+												{fontSizes.map((font) => (
+													<SelectItem key={font} value={font} className="capitalize">
+														{font}
+													</SelectItem>
+												))}
+											</SelectContent>
 										</Select>
 										<Type className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
 									</div>
-									<p className="text-xs text-muted-foreground">
-										Tune the interface to your comfort.
-									</p>
-								</div>
+									<FieldDescription>Tune the interface to your comfort.</FieldDescription>
+								</Field>
 							</div>
 						</div>
 					</section>
