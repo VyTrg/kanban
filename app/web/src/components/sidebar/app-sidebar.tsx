@@ -10,7 +10,6 @@ import {
   Settings,
   Search,
   ChevronDown,
-  Zap,
   MoreHorizontal,
 } from "lucide-react";
 
@@ -27,10 +26,9 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
 
 const navItems = [
-  { title: "Boards", icon: Table, href: "#" },
+  { title: "Boards", icon: Table, href: "/workspaces/default/boards" },
   { title: "Templates", icon: LayoutPanelTop, href: "#" },
   { title: "Members", icon: UsersRound, href: "#" },
   { title: "Settings", icon: Settings, href: "#" },
