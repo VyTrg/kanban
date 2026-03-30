@@ -21,15 +21,22 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en" className="h-full antialiased">
-      <body className="h-full">
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`h-full antialiased ${geistSans.variable} ${geistMono.variable}`}
+    >
+      <body suppressHydrationWarning className="min-h-full flex">
         <SidebarProvider>
+          {/* Sidebar */}
           <AppSidebar />
-          <main className="flex flex-col flex-1 overflow-auto bg-slate-50">
+
+          {/* Main content */}
+          <main className="flex-1 overflow-auto">
             {children}
           </main>
         </SidebarProvider>
