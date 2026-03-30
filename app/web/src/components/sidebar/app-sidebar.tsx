@@ -29,9 +29,9 @@ import {
 
 const navItems = [
   { title: "Boards", icon: Table, href: "/workspaces/default/boards" },
-  { title: "Templates", icon: LayoutPanelTop, href: "#" },
-  { title: "Members", icon: UsersRound, href: "#" },
-  { title: "Settings", icon: Settings, href: "#" },
+  { title: "Templates", icon: LayoutPanelTop, href: "/templates" },
+  { title: "Members", icon: UsersRound, href: "/member" },
+  { title: "Settings", icon: Settings, href: "/settings" },
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
