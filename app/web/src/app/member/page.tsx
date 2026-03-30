@@ -26,7 +26,7 @@ export default function MemberPage() {
   };
 
   return (
-    <div className="p-8 space-y-8">
+    <div className="bg-white p-8 space-y-8">
       {/* 2-Column Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column: Workspace Settings */}
