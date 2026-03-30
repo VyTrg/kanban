@@ -12,7 +12,6 @@ import {
 } from "drizzle-orm/pg-core";
 
 import { cards } from "./cards";
-import { comments } from "./cards";
 import { users } from "./users";
 import { workspaces } from "./workspaces";
 
@@ -39,10 +38,7 @@ export const notifications = pgTable(
     cardId: bigint("cardId", { mode: "number" }).references(() => cards.id, {
       onDelete: "cascade",
     }),
-    commentId: bigint("commentId", { mode: "number" }).references(
-      () => comments.id,
-      { onDelete: "cascade" },
-    ),
+    commentId: bigint("commentId", { mode: "number" }),
     workspaceId: bigint("workspaceId", { mode: "number" }).references(
       () => workspaces.id,
       { onDelete: "cascade" },
@@ -83,11 +79,6 @@ export const notificationsRelations = relations(notifications, ({ one }) => ({
     fields: [notifications.cardId],
     references: [cards.id],
     relationName: "notificationsCard",
-  }),
-  comment: one(comments, {
-    fields: [notifications.commentId],
-    references: [comments.id],
-    relationName: "notificationsComment",
   }),
   workspace: one(workspaces, {
     fields: [notifications.workspaceId],

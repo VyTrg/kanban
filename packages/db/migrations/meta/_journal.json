@@ -8,6 +8,13 @@
       "when": 1772245088693,
       "tag": "0000_hot_wendigo",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1773683853921,
+      "tag": "0001_demonic_crusher_hogan",
+      "breakpoints": true
     }
   ]
 }
