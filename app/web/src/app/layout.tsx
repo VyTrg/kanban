@@ -25,11 +25,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="h-full antialiased">
-      <body className="h-full">
+    <html lang="en"
+      suppressHydrationWarning className={`h-full antialiased ${geistSans.variable} ${geistMono.variable}`}>
+      <body suppressHydrationWarning className="min-h-full flex">
         <SidebarProvider>
           <AppSidebar />
-          <main className="flex flex-col flex-1 overflow-auto bg-slate-50">
+          <main className="flex flex-1 overflow-auto">
             {children}
           </main>
         </SidebarProvider>

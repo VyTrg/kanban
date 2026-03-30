@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/sidebar";
 
 const navItems = [
-  { title: "Boards", icon: Table, href: "/" },
+  { title: "Boards", icon: Table, href: "/workspaces/default/boards" },
   { title: "Templates", icon: LayoutPanelTop, href: "/templates" },
   { title: "Members", icon: UsersRound, href: "/member" },
   { title: "Settings", icon: Settings, href: "/settings" },
