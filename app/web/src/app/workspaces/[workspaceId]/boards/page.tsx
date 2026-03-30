@@ -1,9 +1,8 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { Plus, Upload } from "lucide-react";
+import { Plus, Trash2, Upload } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,10 +13,11 @@ export default function BoardsPage() {
   const workspaceId = params.workspaceId;
   const router = useRouter();
 
-  const { workspace, boards, createBoard } = useBoardsManagement(workspaceId);
+  const { workspace, boards, createBoard, deleteBoard } = useBoardsManagement(workspaceId);
   const [title, setTitle] = React.useState("");
   const [mounted, setMounted] = React.useState(false);
   const [isCreateOpen, setIsCreateOpen] = React.useState(false);
+  const [deleteBoardId, setDeleteBoardId] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     setMounted(true);
@@ -54,15 +54,34 @@ export default function BoardsPage() {
         ) : (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {boards.map((b) => (
-              console.log(b),
-              <Link
+              <div
                 key={b.id}
-                href={`/workspaces/${workspaceId}/boards/${b.id}`}
-                className="group relative mr-5 flex h-[150px] w-full items-center justify-center rounded-md border border-dashed border-light-400  shadow-sm"
+                role="button"
+                tabIndex={0}
+                onClick={() => router.push(`/workspaces/${workspaceId}/boards/${b.id}`)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    router.push(`/workspaces/${workspaceId}/boards/${b.id}`);
+                  }
+                }}
+                className="group relative mr-5 flex h-[150px] w-full items-center justify-center rounded-md border border-dashed border-light-400 shadow-sm cursor-pointer"
               >
                 <div className="text-base flex align-center font-semibold tracking-tight">{b.title}</div>
-                <div className="pointer-events-none absolute inset-0 scale-95 bg-[radial-gradient(circle_at_30%_20%,rgba(99,102,241,0.18),transparent_60%)] opacity-0 blur-[2px] transition duration-300 ease-out group-hover:scale-100 group-hover:opacity-100"/>
-              </Link>
+                <div className="pointer-events-none absolute inset-0 scale-95 bg-[radial-gradient(circle_at_30%_20%,rgba(99,102,241,0.18),transparent_60%)] opacity-0 blur-[2px] transition duration-300 ease-out group-hover:scale-100 group-hover:opacity-100" />
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  type="button"
+                  className="absolute right-2 top-2 opacity-0 transition group-hover:opacity-100"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setDeleteBoardId(b.id);
+                  }}
+                >
+                  <Trash2 />
+                </Button>
+              </div>
             ))}
           </div>
         )}
@@ -105,6 +124,40 @@ export default function BoardsPage() {
                   Create
                 </Button>
               </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {deleteBoardId ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/20"
+            onClick={() => setDeleteBoardId(null)}
+          />
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="relative z-10 w-full max-w-md rounded-xl border bg-background p-5 shadow-lg"
+          >
+            <div className="text-base font-semibold">Delete board</div>
+            <div className="mt-1 text-xs text-muted-foreground">
+              This will remove the board and all its lists and tasks. This action cannot be undone.
+            </div>
+            <div className="mt-4 flex justify-end gap-2">
+              <Button variant="outline" type="button" onClick={() => setDeleteBoardId(null)}>
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                type="button"
+                onClick={() => {
+                  deleteBoard(deleteBoardId);
+                  setDeleteBoardId(null);
+                }}
+              >
+                Delete
+              </Button>
             </div>
           </div>
         </div>

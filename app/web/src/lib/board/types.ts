@@ -4,6 +4,7 @@ export type Workspace = {
   id: Id;
   name: string;
   boardIds: Id[];
+  members: string[];
 };
 
 export type Board = {
@@ -30,6 +31,8 @@ export type Task = {
   listId: Id;
   title: string;
   description: string;
+  labels: string[];
+  members: string[];
   createdAt: string;
   updatedAt: string;
 };

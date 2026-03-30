@@ -47,15 +47,6 @@ export function BoardView({
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              type="button"
-              onClick={() => initBoard(boardId)}
-            >
-              <Zap />
-              Init
-            </Button>
             <Link
               href={`/workspaces/${workspaceId}/boards`}
               className={cn(
@@ -155,7 +146,7 @@ function ListColumn({
   boardId: Id;
   listId: Id;
   title: string;
-  tasks: { id: Id; title: string; description: string }[];
+  tasks: { id: Id; title: string; description: string; labels?: string[] }[];
   onAddTask: (title: string, description: string) => void;
   onDeleteList: () => void;
 }) {
@@ -163,6 +154,7 @@ function ListColumn({
   const [taskDescription, setTaskDescription] = React.useState("");
   const [isTaskOpen, setIsTaskOpen] = React.useState(false);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = React.useState(false);
 
   return (
     <div className="w-[320px] shrink-0 rounded-xl border bg-muted/10">
@@ -205,8 +197,7 @@ function ListColumn({
                 className="w-full rounded-md px-2 py-1.5 text-left text-sm hover:bg-muted cursor-pointer"
                 onClick={() => {
                   setIsMenuOpen(false);
-                  const confirmed = window.confirm("Delete this list and its tasks?");
-                  if (confirmed) onDeleteList();
+                  setIsDeleteOpen(true);
                 }}
               >
                 Delete list
@@ -224,6 +215,21 @@ function ListColumn({
             className="block rounded-lg border bg-card px-3 py-2 text-sm shadow-sm transition hover:bg-muted/40 cursor-pointer"
           >
             <div className="font-medium leading-5">{t.title}</div>
+            {t.labels && t.labels.length > 0 ? (
+              <div className="mt-2 flex flex-wrap gap-1">
+                {t.labels.slice(0, 3).map((label) => (
+                  <span
+                    key={label}
+                    className="rounded-full border bg-muted/40 px-2 py-0.5 text-[11px]"
+                  >
+                    {label}
+                  </span>
+                ))}
+                {t.labels.length > 3 ? (
+                  <span className="text-[11px] text-muted-foreground">+{t.labels.length - 3}</span>
+                ) : null}
+              </div>
+            ) : null}
             {t.description ? (
               <div className="mt-1 line-clamp-2 text-xs text-muted-foreground">
                 {t.description}
@@ -283,6 +289,40 @@ function ListColumn({
                   Create
                 </Button>
               </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {isDeleteOpen ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/20"
+            onClick={() => setIsDeleteOpen(false)}
+          />
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="relative z-10 w-full max-w-md rounded-xl border bg-background p-5 shadow-lg"
+          >
+            <div className="text-base font-semibold">Delete list</div>
+            <div className="mt-1 text-xs text-muted-foreground">
+              This will remove the list and all its tasks. This action cannot be undone.
+            </div>
+            <div className="mt-4 flex justify-end gap-2">
+              <Button variant="outline" type="button" onClick={() => setIsDeleteOpen(false)}>
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                type="button"
+                onClick={() => {
+                  onDeleteList();
+                  setIsDeleteOpen(false);
+                }}
+              >
+                Delete
+              </Button>
             </div>
           </div>
         </div>
