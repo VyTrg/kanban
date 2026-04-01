@@ -17,20 +17,38 @@ export function BoardView({
   workspaceId: Id;
   boardId: Id;
 }) {
-  const { getBoard, getListsForBoard, getTasksForList, initBoard, createList, createTask, deleteList } =
+  const { getBoard, getListsForBoard, getTasksForList, isLoading, initBoard, createList, createTask, deleteList } =
     useBoardsManagement(workspaceId);
   const board = getBoard(boardId);
-  console.log("board", board);
   const lists = getListsForBoard(boardId);
 
   const [newListTitle, setNewListTitle] = React.useState("");
   const [isListOpen, setIsListOpen] = React.useState(false);
 
+  if (isLoading) {
+    return (
+      <div className="h-full w-full">
+        <div className="sticky top-0 z-10 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="flex items-center justify-between gap-3 px-6 py-4">
+            <div className="min-w-0">
+              <div className="h-6 w-32 animate-pulse rounded bg-muted" />
+              <div className="mt-0.5 h-4 w-16 animate-pulse rounded bg-muted" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!board) {
     return (
-      <div className="p-6">
-        <div className="rounded-xl border bg-card p-8 text-sm text-muted-foreground">
-          Board not found.
+      <div className="h-full w-full">
+        <div className="sticky top-0 z-10 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="flex items-center justify-between gap-3 px-6 py-4">
+            <div className="min-w-0">
+              <div className="truncate text-lg font-semibold tracking-tight">Board not found</div>
+            </div>
+          </div>
         </div>
       </div>
     );
