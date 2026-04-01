@@ -49,15 +49,17 @@ type BoardsManagementSelectors = {
   getListsForBoard: (boardId: Id) => List[];
   getTasksForList: (listId: Id) => Task[];
   getTask: (taskId: Id) => Task | null;
+  isLoading: boolean;
 };
 
 export function useBoardsManagement(workspaceId: Id): BoardsManagementSelectors & BoardsManagementActions {
-  const [state, setState] = React.useState<BoardsManagementState>(() =>
-    typeof window === "undefined" ? { workspaces: {}, boards: {}, lists: {}, tasks: {} } : ensureWorkspaceInitialized(workspaceId),
-  );
+  const [state, setState] = React.useState<BoardsManagementState>({ workspaces: {}, boards: {}, lists: {}, tasks: {} });
+  const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
+    setIsLoading(true);
     setState(ensureWorkspaceInitialized(workspaceId));
+    setIsLoading(false);
   }, [workspaceId]);
 
   const persist = React.useCallback(
@@ -278,6 +280,7 @@ export function useBoardsManagement(workspaceId: Id): BoardsManagementSelectors 
     getListsForBoard,
     getTasksForList,
     getTask,
+    isLoading,
     createBoard,
     initBoard,
     deleteBoard,
