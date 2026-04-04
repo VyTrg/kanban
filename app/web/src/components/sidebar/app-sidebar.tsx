@@ -5,14 +5,14 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Table,
-  LayoutPanelTop,
   UsersRound,
   Settings,
   Search,
-  ChevronDown,
   MoreHorizontal,
   LogOut,
   Plus,
+  ChartColumnIncreasing,
+  Zap,
 } from "lucide-react";
 
 import {
@@ -39,10 +39,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 const navItems = [
   { title: "Boards", icon: Table, href: "/workspaces/default/boards" },
-  { title: "Templates", icon: LayoutPanelTop, href: "/templates" },
+  { title: "Statistic", icon: ChartColumnIncreasing, href: "/statistic" },
   { title: "Members", icon: UsersRound, href: "/member" },
   { title: "Settings", icon: Settings, href: "/settings" },
 ];
@@ -76,118 +77,110 @@ export function AppSidebar({ children, ...props }: AppSidebarProps) {
           className="relative z-50 border-r border-sidebar-border bg-sidebar"
           {...props}
         >
-          {/*header*/}
-          <SidebarHeader className="h-14 border-b border-sidebar-border/60 bg-sidebar flex flex-row items-center justify-between px-4">
+          <SidebarHeader
+            className={cn(
+              "h-14 border-b border-sidebar-border/60 bg-sidebar flex flex-row items-center justify-between",
+              isCollapsed ? "px-2" : "px-4"
+            )}
+          >
             {!isCollapsed && (
-              <div className="flex items-center gap-2 font-semibold transition-all">
-                <span className="text-lg tracking-tight">kanban</span>
+              <div className="flex items-center gap-2 font-semibold">
+                <span className="text-base tracking-tight">kan.bn</span>
               </div>
             )}
-            <SidebarTrigger
-              className={`h-8 w-8 ${isCollapsed ? "mx-auto" : ""}`}
-            />
+            <SidebarTrigger className={`h-8 w-8 ${isCollapsed ? "mx-auto" : ""}`} />
           </SidebarHeader>
 
-          <SidebarContent className="px-2 py-4">
-            {/*workspace*/}
-            <SidebarGroup>
-              <SidebarMenu>
-                <SidebarMenuItem>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <SidebarMenuButton
-                        size="lg"
-                        className={`w-full hover:bg-sidebar-accent/50 ${
-                          isCollapsed ? "justify-center px-0" : "justify-between"
-                        }`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground shadow-sm font-bold text-xs">
-                            M
-                          </div>
-                          {!isCollapsed && (
-                            <span className="font-medium text-[15px] text-sidebar-foreground">
-                              mychannel
-                            </span>
-                          )}
+          <SidebarContent
+            className={cn(
+              "flex h-full flex-col gap-4 py-4",
+              isCollapsed ? "px-1" : "px-3"
+            )}
+          >
+            <SidebarGroup className={cn(isCollapsed ? "p-1" : "p-2")}>
+              <div
+                className={`flex items-center gap-3 ${
+                  isCollapsed ? "justify-center" : "justify-between"
+                }`}
+              >
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      className={`flex items-center gap-3 rounded-lg px-2 py-2 hover:bg-sidebar-accent/50 transition-colors ${
+                        isCollapsed ? "justify-center px-0" : ""
+                      }`}
+                    >
+                      <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground shadow-sm font-bold text-xs">
+                        {workspaces[0]?.initials ?? "M"}
+                      </div>
+                      {!isCollapsed && (
+                        <span className="font-medium text-[15px] text-sidebar-foreground">
+                          {workspaces[0]?.name ?? "mychannel"}
+                        </span>
+                      )}
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent side="right" align="start" className="w-56">
+                    <DropdownMenuLabel>Switch Workspace</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {workspaces.map((ws) => (
+                      <DropdownMenuItem key={ws.id}>
+                        <div className="flex size-6 shrink-0 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground shadow-sm font-bold text-xs mr-2">
+                          {ws.initials}
                         </div>
-                        {!isCollapsed && (
-                          <div className="flex items-center gap-1">
-                            <ChevronDown className="size-4 text-sidebar-foreground/70" />
-                          </div>
-                        )}
-                      </SidebarMenuButton>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent side="right" align="start" className="w-56">
-                      <DropdownMenuLabel>Switch Workspace</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      {workspaces.map((ws) => (
-                        <DropdownMenuItem key={ws.id}>
-                          <div className="flex size-6 shrink-0 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground shadow-sm font-bold text-xs mr-2">
-                            {ws.initials}
-                          </div>
-                          <span className="flex-1">{ws.name}</span>
-                        </DropdownMenuItem>
-                      ))}
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem className="text-muted-foreground">
-                        <Plus className="size-4 mr-2" />
-                        Create Workspace
+                        <span className="flex-1">{ws.name}</span>
                       </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </SidebarMenuItem>
-              </SidebarMenu>
+                    ))}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="text-muted-foreground">
+                      <Plus className="size-4 mr-2" />
+                      Create Workspace
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                {!isCollapsed && (
+                  <Popover open={searchOpen} onOpenChange={setSearchOpen}>
+                    <PopoverTrigger asChild>
+                      <button className="inline-flex size-9 items-center justify-center rounded-md border border-sidebar-border bg-sidebar hover:bg-sidebar-accent/50">
+                        <Search className="size-4 text-sidebar-foreground/70" />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent side="right" align="start" className="w-80 p-3">
+                      <div className="space-y-2">
+                        <Input
+                          placeholder="Search boards, members..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          autoFocus
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          Press Esc to close
+                        </p>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                )}
+              </div>
             </SidebarGroup>
 
-            {/*search*/}
-            <SidebarGroup className="mt-2">
-              <Popover open={searchOpen} onOpenChange={setSearchOpen}>
-                <PopoverTrigger asChild>
-                  <SidebarMenuButton
-                    className={`w-full hover:bg-sidebar-accent/50 ${
-                      isCollapsed ? "justify-center px-0" : ""
-                    }`}
-                  >
-                    <Search className="size-4 shrink-0 text-sidebar-foreground/70" />
-                    {!isCollapsed && (
-                      <span className="text-[15px] text-sidebar-foreground/70">
-                        Search...
-                      </span>
-                    )}
-                  </SidebarMenuButton>
-                </PopoverTrigger>
-                <PopoverContent side="right" align="start" className="w-80 p-3">
-                  <div className="space-y-2">
-                    <Input
-                      placeholder="Search boards, members..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      autoFocus
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Press Esc to close
-                    </p>
-                  </div>
-                </PopoverContent>
-              </Popover>
-            </SidebarGroup>
-
-            {/*main navigator*/}
-            <SidebarGroup className="mt-4">
+            <SidebarGroup className={cn(isCollapsed ? "p-1" : "p-2")}>
               <SidebarMenu className="gap-1">
                 {navItems.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton
                       asChild
                       isActive={pathname === item.href}
-                      className={`px-3 py-5 transition-colors hover:bg-sidebar-accent/50 data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground ${
-                        isCollapsed ? "justify-center !w-full" : ""
+                      className={`px-3 py-2.5 rounded-lg transition-colors hover:bg-sidebar-accent/50 data-[active=true]:bg-sidebar-accent/60 data-[active=true]:text-sidebar-accent-foreground ${
+                        isCollapsed ? "justify-center px-0" : ""
                       }`}
                     >
                       <Link
                         href={item.href}
-                        className="flex items-center gap-3"
+                        className={cn(
+                          "flex items-center gap-3",
+                          isCollapsed && "w-full justify-center"
+                        )}
                       >
                         <item.icon
                           className={`size-5 shrink-0 text-sidebar-foreground/80 ${
@@ -207,16 +200,19 @@ export function AppSidebar({ children, ...props }: AppSidebarProps) {
             </SidebarGroup>
           </SidebarContent>
 
-          {/*footer*/}
-          <SidebarFooter className="p-2 space-y-2 border-t border-sidebar-border/60 bg-sidebar">
+          <SidebarFooter
+            className={cn(
+              "space-y-3 border-t border-sidebar-border/60 bg-sidebar",
+              isCollapsed ? "p-2" : "p-3"
+            )}
+          >
             <SidebarMenu>
               <SidebarMenuItem>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <SidebarMenuButton
-                      size="lg"
-                      className={`w-full hover:bg-sidebar-accent/50 ${
-                        isCollapsed ? "justify-center px-0" : "px-2"
+                    <button
+                      className={`w-full flex items-center gap-3 rounded-lg px-2 py-2 hover:bg-sidebar-accent/50 transition-colors ${
+                        isCollapsed ? "justify-center px-0" : ""
                       }`}
                     >
                       <div className="flex size-8 shrink-0 items-center justify-center rounded-full border border-sidebar-border bg-muted text-foreground/80 font-semibold text-xs">
@@ -224,7 +220,7 @@ export function AppSidebar({ children, ...props }: AppSidebarProps) {
                       </div>
                       {!isCollapsed && (
                         <>
-                          <div className="grid flex-1 text-left text-sm leading-tight ml-2">
+                          <div className="grid flex-1 text-left text-sm leading-tight">
                             <span className="truncate font-semibold text-sidebar-foreground">
                               Vy Trương
                             </span>
@@ -232,7 +228,7 @@ export function AppSidebar({ children, ...props }: AppSidebarProps) {
                           <MoreHorizontal className="ml-auto size-4 text-sidebar-foreground/70" />
                         </>
                       )}
-                    </SidebarMenuButton>
+                    </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent side="right" align="start" className="w-56">
                     <DropdownMenuLabel>My Account</DropdownMenuLabel>
@@ -255,6 +251,13 @@ export function AppSidebar({ children, ...props }: AppSidebarProps) {
                 </DropdownMenu>
               </SidebarMenuItem>
             </SidebarMenu>
+
+            {!isCollapsed && (
+              <button className="w-full inline-flex items-center justify-center gap-2 rounded-lg border border-sidebar-border bg-sidebar px-3 py-2 text-sm font-semibold hover:bg-sidebar-accent/50">
+                <Zap className="size-4" />
+                Upgrade to Pro
+              </button>
+            )}
           </SidebarFooter>
           <SidebarRail />
         </Sidebar>
