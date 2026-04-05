@@ -37,8 +37,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -52,6 +64,11 @@ const workspaces = [
   { id: "default", name: "mychannel", initials: "M" },
   { id: "work", name: "Workspace 2", initials: "W" },
 ];
+
+type CreateWorkspaceForm = {
+  name: string;
+  description: string;
+};
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
   children?: React.ReactNode;
@@ -69,6 +86,23 @@ export function AppSidebar({ children, ...props }: AppSidebarProps) {
     router.push("/login");
   };
 
+  const [createOpen, setCreateOpen] = React.useState(false);
+  const [createForm, setCreateForm] = React.useState<CreateWorkspaceForm>({
+    name: "",
+    description: "",
+  });
+  const [isCreating, setIsCreating] = React.useState(false);
+
+  const handleCreateWorkspace = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!createForm.name.trim()) return;
+
+    setIsCreating(true);
+    setCreateOpen(false);
+    setCreateForm({ name: "", description: "" });
+    setIsCreating(false);
+  };
+
   return (
     <ThemeProvider>
       <div className="flex h-screen w-full">
@@ -80,7 +114,7 @@ export function AppSidebar({ children, ...props }: AppSidebarProps) {
           <SidebarHeader
             className={cn(
               "h-14 border-b border-sidebar-border/60 bg-sidebar flex flex-row items-center justify-between",
-              isCollapsed ? "px-2" : "px-4"
+              isCollapsed ? "px-2" : "px-4",
             )}
           >
             {!isCollapsed && (
@@ -88,13 +122,15 @@ export function AppSidebar({ children, ...props }: AppSidebarProps) {
                 <span className="text-base tracking-tight">kan.bn</span>
               </div>
             )}
-            <SidebarTrigger className={`h-8 w-8 ${isCollapsed ? "mx-auto" : ""}`} />
+            <SidebarTrigger
+              className={`h-8 w-8 ${isCollapsed ? "mx-auto" : ""}`}
+            />
           </SidebarHeader>
 
           <SidebarContent
             className={cn(
               "flex h-full flex-col gap-4 py-4",
-              isCollapsed ? "px-1" : "px-3"
+              isCollapsed ? "px-1" : "px-3",
             )}
           >
             <SidebarGroup className={cn(isCollapsed ? "p-1" : "p-2")}>
@@ -120,7 +156,11 @@ export function AppSidebar({ children, ...props }: AppSidebarProps) {
                       )}
                     </button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent side="right" align="start" className="w-56">
+                  <DropdownMenuContent
+                    side="right"
+                    align="start"
+                    className="w-56"
+                  >
                     <DropdownMenuLabel>Switch Workspace</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     {workspaces.map((ws) => (
@@ -132,7 +172,10 @@ export function AppSidebar({ children, ...props }: AppSidebarProps) {
                       </DropdownMenuItem>
                     ))}
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem className="text-muted-foreground">
+                    <DropdownMenuItem
+                      className="text-muted-foreground cursor-pointer"
+                      onClick={() => setCreateOpen(true)}
+                    >
                       <Plus className="size-4 mr-2" />
                       Create Workspace
                     </DropdownMenuItem>
@@ -146,7 +189,11 @@ export function AppSidebar({ children, ...props }: AppSidebarProps) {
                         <Search className="size-4 text-sidebar-foreground/70" />
                       </button>
                     </PopoverTrigger>
-                    <PopoverContent side="right" align="start" className="w-80 p-3">
+                    <PopoverContent
+                      side="right"
+                      align="start"
+                      className="w-80 p-3"
+                    >
                       <div className="space-y-2">
                         <Input
                           placeholder="Search boards, members..."
@@ -179,7 +226,7 @@ export function AppSidebar({ children, ...props }: AppSidebarProps) {
                         href={item.href}
                         className={cn(
                           "flex items-center gap-3",
-                          isCollapsed && "w-full justify-center"
+                          isCollapsed && "w-full justify-center",
                         )}
                       >
                         <item.icon
@@ -203,7 +250,7 @@ export function AppSidebar({ children, ...props }: AppSidebarProps) {
           <SidebarFooter
             className={cn(
               "space-y-3 border-t border-sidebar-border/60 bg-sidebar",
-              isCollapsed ? "p-2" : "p-3"
+              isCollapsed ? "p-2" : "p-3",
             )}
           >
             <SidebarMenu>
@@ -230,15 +277,12 @@ export function AppSidebar({ children, ...props }: AppSidebarProps) {
                       )}
                     </button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent side="right" align="start" className="w-56">
+                  <DropdownMenuContent
+                    side="right"
+                    align="start"
+                    className="w-56"
+                  >
                     <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link href="/settings">
-                        <Settings className="size-4 mr-2" />
-                        Settings
-                      </Link>
-                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onClick={handleLogout}
@@ -251,17 +295,73 @@ export function AppSidebar({ children, ...props }: AppSidebarProps) {
                 </DropdownMenu>
               </SidebarMenuItem>
             </SidebarMenu>
-
-            {!isCollapsed && (
-              <button className="w-full inline-flex items-center justify-center gap-2 rounded-lg border border-sidebar-border bg-sidebar px-3 py-2 text-sm font-semibold hover:bg-sidebar-accent/50">
-                <Zap className="size-4" />
-                Upgrade to Pro
-              </button>
-            )}
           </SidebarFooter>
           <SidebarRail />
         </Sidebar>
         <div className="flex-1 overflow-auto">{children}</div>
+
+        <Sheet open={createOpen} onOpenChange={setCreateOpen}>
+          <SheetContent>
+            <SheetHeader>
+              <SheetTitle>Create Workspace</SheetTitle>
+              <SheetDescription>
+                Create a new workspace to organize your boards and collaborate
+                with team members.
+              </SheetDescription>
+            </SheetHeader>
+            <form onSubmit={handleCreateWorkspace} className="mt-6 space-y-4">
+              <div className="space-y-2">
+                <label
+                  htmlFor="workspace-name"
+                  className="text-sm font-medium text-foreground"
+                >
+                  Workspace Name
+                </label>
+                <Input
+                  id="workspace-name"
+                  placeholder="Enter workspace name"
+                  value={createForm.name}
+                  onChange={(e) =>
+                    setCreateForm((prev) => ({ ...prev, name: e.target.value }))
+                  }
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <label
+                  htmlFor="workspace-description"
+                  className="text-sm font-medium text-foreground"
+                >
+                  Description (optional)
+                </label>
+                <Input
+                  id="workspace-description"
+                  placeholder="Enter description"
+                  value={createForm.description}
+                  onChange={(e) =>
+                    setCreateForm((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+              <div className="flex justify-end gap-3 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setCreateOpen(false)}
+                  disabled={isCreating}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isCreating || !createForm.name.trim()}>
+                  {isCreating ? "Creating..." : "Create Workspace"}
+                </Button>
+              </div>
+            </form>
+          </SheetContent>
+        </Sheet>
       </div>
     </ThemeProvider>
   );
