@@ -82,16 +82,21 @@ export function AppSidebar({ children, ...props }: AppSidebarProps) {
   const [searchOpen, setSearchOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState("");
 
-  const handleLogout = () => {
-    router.push("/login");
-  };
-
   const [createOpen, setCreateOpen] = React.useState(false);
   const [createForm, setCreateForm] = React.useState<CreateWorkspaceForm>({
     name: "",
     description: "",
   });
   const [isCreating, setIsCreating] = React.useState(false);
+
+  const isAuthRoute = pathname === "/" || pathname === "/login";
+  if (isAuthRoute) {
+    return <>{children}</>;
+  }
+
+  const handleLogout = () => {
+    router.push("/login");
+  };
 
   const handleCreateWorkspace = async (e: React.FormEvent) => {
     e.preventDefault();
