@@ -161,16 +161,16 @@ export default function MemberPage() {
           <div
             role="dialog"
             aria-modal="true"
-            className="relative z-10 w-full max-w-md rounded-xl border bg-slate-900 border-slate-700 p-5 shadow-lg"
+            className="relative z-10 w-full max-w-md rounded-xl border bg-black border-muted-700 p-5 shadow-lg"
           >
             <div className="text-base font-semibold text-white">Invite Member</div>
-            <div className="mt-1 text-xs text-slate-400">
+            <div className="mt-1 text-xs text-muted-400">
               Send an invitation to join your workspace
             </div>
             <div className="mt-4 space-y-4">
               {/* Email Input */}
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-muted-300 mb-2">
                   Email Address
                 </label>
                 <input
@@ -178,29 +178,29 @@ export default function MemberPage() {
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
                   placeholder="user@company.com"
-                  className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-500 text-sm outline-none focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500/50"
+                  className="w-full px-3 py-2 rounded-lg bg-muted-800 border border-muted-700 text-white placeholder-muted-500 text-sm outline-none focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500"
                 />
               </div>
 
               {/* Current Workspace Display */}
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-muted-300 mb-2">
                   Workspace
                 </label>
-                <div className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm font-medium">
+                <div className="w-full px-3 py-2 rounded-lg bg-muted-800 border border-muted-700 text-white text-sm font-medium">
                   {currentWorkspaceData.name}
                 </div>
               </div>
 
               {/* Role Selection */}
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-muted-300 mb-2">
                   Role
                 </label>
                 <select
                   value={inviteRole}
                   onChange={(e) => setInviteRole(e.target.value as "Owner" | "Member" | "Observer")}
-                  className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm outline-none focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500/50"
+                  className="w-full px-3 py-2 rounded-lg bg-muted-800 border border-muted-700 text-white text-sm outline-none focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500"
                 >
                   <option value="Owner">Owner</option>
                   <option value="Member">Member</option>
@@ -214,7 +214,7 @@ export default function MemberPage() {
                   variant="outline"
                   type="button"
                   onClick={() => setIsInviteOpen(false)}
-                  className="bg-slate-800 border-slate-700 text-white hover:bg-slate-700"
+                  className="bg-muted-800 border-muted-700 text-white hover:bg-muted-700"
                 >
                   Cancel
                 </Button>
@@ -222,7 +222,7 @@ export default function MemberPage() {
                   type="button"
                   onClick={handleSendInvite}
                   disabled={!inviteEmail.trim()}
-                  className="bg-blue-600 hover:bg-blue-700 text-white disabled:bg-slate-700 disabled:text-slate-400"
+                  className="bg-blue-600 hover:bg-blue-700 text-white disabled:bg-muted-700 disabled:text-muted-400"
                 >
                   Send Invite
                 </Button>
@@ -242,10 +242,10 @@ export default function MemberPage() {
           <div
             role="dialog"
             aria-modal="true"
-            className="relative z-10 w-full max-w-md rounded-xl border bg-slate-900 border-slate-700 p-5 shadow-lg"
+            className="relative z-10 w-full max-w-md rounded-xl border bg-muted-700 border-muted-700 p-5 shadow-lg"
           >
             <div className="text-base font-semibold text-white">Switch Workspace</div>
-            <div className="mt-1 text-xs text-slate-400">
+            <div className="mt-1 text-xs text-muted-400">
               Select a workspace to manage members and settings
             </div>
             <div className="mt-4 space-y-2 max-h-64 overflow-y-auto">
@@ -256,7 +256,7 @@ export default function MemberPage() {
                   className={`w-full flex items-center justify-between px-4 py-3 rounded-lg border transition-colors ${
                     currentWorkspace === project.id
                       ? "bg-blue-900 border-blue-700 text-white"
-                      : "bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:border-slate-600"
+                      : "bg-muted-800 border-muted-700 text-muted-300 hover:bg-muted-700 hover:border-muted-600"
                   }`}
                 >
                   <div className="text-left">
@@ -268,12 +268,12 @@ export default function MemberPage() {
                 </button>
               ))}
             </div>
-            <div className="flex justify-end gap-2 pt-4 mt-4 border-t border-slate-700">
+            <div className="flex justify-end gap-2 pt-4 mt-4 border-t border-muted-700">
               <Button
                 variant="outline"
                 type="button"
                 onClick={() => setIsWorkspaceSwitchOpen(false)}
-                className="bg-slate-800 border-slate-700 text-white hover:bg-slate-700"
+                className="bg-muted-800 border-muted-700 text-white hover:bg-muted-700"
               >
                 Close
               </Button>

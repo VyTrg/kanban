@@ -21,7 +21,7 @@ export function WorkspaceCard({
   onSwitchWorkspace,
 }: WorkspaceCardProps) {
   return (
-    <div className="rounded-xl bg-muted-900 border border-muted-700 shadow-lg p-6 space-y-6">
+    <div className="rounded-xl bg-muted-900 border border-black shadow-lg p-6 space-y-6">
       {/* Header with Lock Icon */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -87,7 +87,7 @@ export function WorkspaceCard({
       <Button
         onClick={onSwitchWorkspace}
         variant="outline"
-        className="w-full bg-muted-800 border-muted-700 text-white hover:bg-muted-700 gap-2"
+        className="w-full bg-muted-700 border-muted-700 text-white hover:bg-muted-600 gap-2"
       >
         <ArrowRightLeft className="h-4 w-4" />
         Switch Workspace

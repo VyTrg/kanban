@@ -241,7 +241,7 @@ export function MembersTable({ members = defaultMembers }: MembersTableProps) {
           <div
             role="dialog"
             aria-modal="true"
-            className="relative z-10 w-full max-w-md rounded-xl border bg-muted-900 border-muted-700 p-5 shadow-lg"
+            className="relative z-10 w-full max-w-md rounded-xl border bg-muted-700 border-muted-700 p-5 shadow-lg"
           >
             <div className="text-base font-semibold text-white">Change Role</div>
             <div className="mt-1 text-xs text-muted-400">
