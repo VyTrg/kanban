@@ -2,7 +2,9 @@
 
 import React from "react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { MoreVertical, LogOut, Shield } from "lucide-react";
 
 interface Member {
   id: string;
@@ -57,27 +59,62 @@ function getInitials(name: string): string {
 }
 
 export function MembersTable({ members = defaultMembers }: MembersTableProps) {
+  const [isDeactivateOpen, setIsDeactivateOpen] = React.useState(false);
+  const [isRoleSwitchOpen, setIsRoleSwitchOpen] = React.useState(false);
+  const [selectedMember, setSelectedMember] = React.useState<Member | null>(null);
+  const [selectedRole, setSelectedRole] = React.useState<"Owner" | "Member" | "Observer">("Member");
+
+  const handleDeactivate = (member: Member) => {
+    setSelectedMember(member);
+    setIsDeactivateOpen(true);
+  };
+
+  const handleRoleSwitch = (member: Member) => {
+    setSelectedMember(member);
+    setSelectedRole(member.role);
+    setIsRoleSwitchOpen(true);
+  };
+
+  const confirmDeactivate = () => {
+    if (selectedMember) {
+      console.log("Deactivating member:", selectedMember.name);
+    }
+    setIsDeactivateOpen(false);
+    setSelectedMember(null);
+  };
+
+  const confirmRoleSwitch = () => {
+    if (selectedMember) {
+      console.log("Switching role for:", selectedMember.name, "to", selectedRole);
+    }
+    setIsRoleSwitchOpen(false);
+    setSelectedMember(null);
+  };
+
   return (
-    <div className="rounded-xl bg-white border border-slate-200 shadow-sm overflow-hidden">
+    <div className="rounded-xl bg-muted-900 border border-muted-700 shadow-lg overflow-hidden">
       {/* Header */}
-      <div className="grid grid-cols-3 gap-4 px-6 py-4 bg-slate-50 border-b border-slate-200">
-        <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
+      <div className="grid grid-cols-4 gap-4 px-6 py-4 bg-card border-b border-muted-700">
+        <p className="text-xs font-semibold text-muted-300 uppercase tracking-wide">
           Member
         </p>
-        <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
+        <p className="text-xs font-semibold text-muted-300 uppercase tracking-wide">
           Role
         </p>
-        <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
+        <p className="text-xs font-semibold text-muted-300 uppercase tracking-wide">
           Status
+        </p>
+        <p className="text-xs font-semibold text-muted-300 uppercase tracking-wide text-right">
+          Actions
         </p>
       </div>
 
       {/* Rows */}
-      <div className="divide-y divide-slate-100">
+      <div className="divide-y divide-muted-700">
         {members.map((member) => (
           <div
             key={member.id}
-            className="grid grid-cols-3 gap-4 px-6 py-4 hover:bg-slate-50 transition-colors"
+            className="grid grid-cols-4 gap-4 px-6 py-4 hover:bg-muted-800 transition-colors items-center"
           >
             {/* Member Info */}
             <div className="flex items-center gap-3 min-w-0">
@@ -90,10 +127,10 @@ export function MembersTable({ members = defaultMembers }: MembersTableProps) {
                 {getInitials(member.name)}
               </div>
               <div className="min-w-0">
-                <p className="text-sm font-medium text-slate-900 truncate">
+                <p className="text-sm font-medium text-white truncate">
                   {member.name}
                 </p>
-                <p className="text-xs text-slate-500 truncate">
+                <p className="text-xs text-muted-400 truncate">
                   {member.email}
                 </p>
               </div>
@@ -125,13 +162,127 @@ export function MembersTable({ members = defaultMembers }: MembersTableProps) {
                     : "bg-yellow-500"
                 )}
               />
-              <span className="text-sm text-slate-600 capitalize">
+              <span className="text-sm text-muted-300 capitalize">
                 {member.status}
               </span>
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center justify-end gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleRoleSwitch(member)}
+                className="h-8 px-2 text-xs gap-1"
+                title="Change role"
+              >
+                <Shield className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Role</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleDeactivate(member)}
+                className="h-8 px-2 text-xs gap-1 hover:bg-red-950 hover:border-red-700"
+                title="Deactivate member"
+              >
+                <LogOut className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Remove</span>
+              </Button>
             </div>
           </div>
         ))}
       </div>
+
+      {/* Deactivate Confirmation Modal */}
+      {isDeactivateOpen && selectedMember ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/20"
+            onClick={() => setIsDeactivateOpen(false)}
+          />
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="relative z-10 w-full max-w-md rounded-xl border bg-muted-900 border-muted-700 p-5 shadow-lg"
+          >
+            <div className="text-base font-semibold text-white">Remove Member</div>
+            <div className="mt-1 text-xs text-muted-400">
+              Are you sure you want to remove {selectedMember.name} from this workspace?
+            </div>
+            <div className="mt-4 flex justify-end gap-2">
+              <Button
+                variant="outline"
+                type="button"
+                onClick={() => setIsDeactivateOpen(false)}
+                className="bg-muted-800 border-muted-700 text-white hover:bg-muted-700"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                onClick={confirmDeactivate}
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                Remove Member
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {/* Role Switch Modal */}
+      {isRoleSwitchOpen && selectedMember ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/20"
+            onClick={() => setIsRoleSwitchOpen(false)}
+          />
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="relative z-10 w-full max-w-md rounded-xl border bg-muted-700 border-muted-700 p-5 shadow-lg"
+          >
+            <div className="text-base font-semibold text-white">Change Role</div>
+            <div className="mt-1 text-xs text-muted-400">
+              Update role for {selectedMember.name}
+            </div>
+            <div className="mt-4 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-muted-300 mb-2">
+                  Select New Role
+                </label>
+                <select
+                  value={selectedRole}
+                  onChange={(e) => setSelectedRole(e.target.value as "Owner" | "Member" | "Observer")}
+                  className="w-full px-3 py-2 rounded-lg bg-muted-800 border border-muted-700 text-white text-sm outline-none focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500/50"
+                >
+                  <option value="Owner">Owner</option>
+                  <option value="Member">Member</option>
+                  <option value="Observer">Observer</option>
+                </select>
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={() => setIsRoleSwitchOpen(false)}
+                  className="bg-muted-800 border-muted-700 text-white hover:bg-muted-700"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="button"
+                  onClick={confirmRoleSwitch}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  Update Role
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
