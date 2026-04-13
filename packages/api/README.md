@@ -21,6 +21,7 @@ packages/api/
 │   │       ├── index.ts      # Gom tất cả routes v1
 │   │       └── boards/       # Tài nguyên Boards (theo api.md)
 │   ├── services/             # Tầng xử lý Logic & Database (Business Logic)
+│   ├── scripts/              # Các script tiện ích (Test DB, Seed, Migration)
 │   ├── middlewares/          # Bộ lọc trung gian (Auth, Logger, Validation)
 │   ├── validations/          # Định nghĩa Zod Schemas
 │   ├── lib/                  # Tiện ích dùng chung (Response formatter, JWT)
@@ -45,7 +46,22 @@ Tất cả API phải trả về format như sau (đã định nghĩa trong `src
 ### 3. Type-safety
 Tận dụng tối đa kiểu dữ liệu từ `@kanban/db` để backend luôn đồng bộ với cấu trúc database.
 
+## ⚙️ Chuẩn bị môi trường (Prerequisites)
+Trước khi chạy ứng dụng hoặc thực hiện test, hãy đảm bảo:
+1. **Khởi động Database**:
+   ```bash
+   cd packages/db
+   docker-compose up -d
+   ```
+2. **Đồng bộ Schema**:
+   ```bash
+   cd packages/db
+   npm run db:push
+   ```
+3. **Cấu hình Environment**: Copy file `.env` vào `packages/api/` (xem `.example.env` ở root).
+
 ## 💻 Lệnh thực thi (Scripts)
 - `npm run dev`: Chạy server ở chế độ development (watch mode).
+- `npm run test:db`: Kiểm tra kết nối tới database pool.
 - `npm run build`: Build dự án sang JS thuần.
 - `npm run start`: Chạy bản build trong môi trường production.
