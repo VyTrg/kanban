@@ -6,9 +6,27 @@ import { MoreHorizontal, Plus, Zap } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import type { Id } from "@/lib/board/types";
 import { useBoardsManagement } from "@/hooks/use-board";
+import { Badge } from "@/components/ui/badge";
+import { format } from "date-fns";
+import { Task } from "@/lib/board/types";
 
 export function BoardView({
   workspaceId,
@@ -17,7 +35,7 @@ export function BoardView({
   workspaceId: Id;
   boardId: Id;
 }) {
-  const { getBoard, getListsForBoard, getTasksForList, isLoading, initBoard, createList, createTask, deleteList } =
+  const { getBoard, getListsForBoard, getTasksForList, isLoading, initBoard, createList, createTask, deleteList, updateList } =
     useBoardsManagement(workspaceId);
   const board = getBoard(boardId);
   const lists = getListsForBoard(boardId);
@@ -104,6 +122,7 @@ export function BoardView({
                 tasks={getTasksForList(list.id)}
                 onAddTask={(t, d) => createTask(boardId, list.id, t, d)}
                 onDeleteList={() => deleteList(boardId, list.id)}
+                onUpdateList={(title) => updateList(list.id, { title })}
               />
             ))
           )}
@@ -133,6 +152,7 @@ export function BoardView({
                   Cancel
                 </Button>
                 <Button
+                  disabled={!newListTitle.trim()}
                   type="button"
                   onClick={() => {
                     createList(boardId, newListTitle);
@@ -159,193 +179,235 @@ function ListColumn({
   tasks,
   onAddTask,
   onDeleteList,
+  onUpdateList,
 }: {
   workspaceId: Id;
   boardId: Id;
   listId: Id;
   title: string;
-  tasks: { id: Id; title: string; description: string; labels?: string[] }[];
+  tasks: Task[];
   onAddTask: (title: string, description: string) => void;
   onDeleteList: () => void;
+  onUpdateList: (title: string) => void;
 }) {
+  const [newTitle, setNewTitle] = React.useState(title);
   const [taskTitle, setTaskTitle] = React.useState("");
   const [taskDescription, setTaskDescription] = React.useState("");
   const [isTaskOpen, setIsTaskOpen] = React.useState(false);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = React.useState(false);
+  const [isRenameOpen, setIsRenameOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    setNewTitle(title);
+  }, [title]);
+
+  const handleRename = () => {
+    if (newTitle.trim() && newTitle !== title) {
+      onUpdateList(newTitle);
+    }
+    setIsRenameOpen(false);
+  };
 
   return (
-    <div className="w-[320px] shrink-0 rounded-xl border bg-muted/10">
-      <div className="flex items-center justify-between gap-2 border-b px-4 py-3">
-        <div className="min-w-0">
-          <div className="truncate text-sm font-semibold">{title}</div>
-          <div className="text-xs text-muted-foreground">{tasks.length} tasks</div>
+    <div className="flex w-72 flex-col rounded-lg border bg-card">
+      <div className="flex items-center justify-between p-3">
+        <div className="flex items-center gap-2">
+          <div className="text-sm font-medium">{title}</div>
+          <Badge variant="secondary">{tasks.length}</Badge>
         </div>
-        <div className="relative flex items-center gap-1">
-          <Button
-            size="icon-sm"
-            type="button"
-            variant="ghost"
-            className="rounded-full bg-muted/60 text-muted-foreground hover:bg-muted cursor-pointer"
-            onClick={() => setIsTaskOpen(true)}
-          >
-            <Plus />
-            <span className="sr-only">New task</span>
-          </Button>
-          <Button
-            size="icon-sm"
-            variant="ghost"
-            type="button"
-            className="rounded-full bg-muted/60 text-muted-foreground hover:bg-muted cursor-pointer"
-            onClick={() => setIsMenuOpen((open) => !open)}
-            aria-expanded={isMenuOpen}
-            aria-haspopup="menu"
-          >
-            <MoreHorizontal />
-            <span className="sr-only">List actions</span>
-          </Button>
-          {isMenuOpen ? (
-            <div
-              role="menu"
-              className="absolute right-0 top-full z-10 mt-2 w-36 rounded-lg border bg-background p-1 shadow-md"
-            >
-              <button
+        <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-7 w-7">
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onSelect={() => setIsRenameOpen(true)}>
+              Rename
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => setIsDeleteOpen(true)} className="text-red-500">
+              Delete list
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+      <div className="flex flex-col gap-3 p-3">
+        {tasks.map((task) => (
+          <TaskCard key={task.id} workspaceId={workspaceId} boardId={boardId} task={task} />
+        ))}
+      </div>
+      <div className="p-3 pt-0">
+        {isTaskOpen ? (
+          <div className="space-y-3 rounded-lg border bg-background p-3">
+            <Input
+              value={taskTitle}
+              onChange={(e) => setTaskTitle(e.target.value)}
+              placeholder="Task title…"
+              className="h-8"
+            />
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
                 type="button"
-                role="menuitem"
-                className="w-full rounded-md px-2 py-1.5 text-left text-sm hover:bg-muted cursor-pointer"
                 onClick={() => {
-                  setIsMenuOpen(false);
-                  setIsDeleteOpen(true);
+                  setIsTaskOpen(false);
+                  setTaskTitle("");
+                  setTaskDescription("");
                 }}
               >
-                Delete list
-              </button>
-            </div>
-          ) : null}
-        </div>
-      </div>
-
-      <div className="space-y-2 p-3">
-        {tasks.map((t) => (
-          <Link
-            key={t.id}
-            href={`/workspaces/${workspaceId}/boards/${boardId}/tasks/${t.id}`}
-            className="block rounded-lg border bg-card px-3 py-2 text-sm shadow-sm transition hover:bg-muted/40 cursor-pointer"
-          >
-            <div className="font-medium leading-5">{t.title}</div>
-            {t.labels && t.labels.length > 0 ? (
-              <div className="mt-2 flex flex-wrap gap-1">
-                {t.labels.slice(0, 3).map((label) => (
-                  <span
-                    key={label}
-                    className="rounded-full border bg-muted/40 px-2 py-0.5 text-[11px]"
-                  >
-                    {label}
-                  </span>
-                ))}
-                {t.labels.length > 3 ? (
-                  <span className="text-[11px] text-muted-foreground">+{t.labels.length - 3}</span>
-                ) : null}
-              </div>
-            ) : null}
-            {t.description ? (
-              <div className="mt-1 line-clamp-2 text-xs text-muted-foreground">
-                {t.description}
-              </div>
-            ) : null}
-          </Link>
-        ))}
-
-      </div>
-
-      {isTaskOpen ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div
-            className="absolute inset-0 bg-black/20"
-            onClick={() => setIsTaskOpen(false)}
-          />
-          <div
-            role="dialog"
-            aria-modal="true"
-            className="relative z-10 w-full max-w-md rounded-xl border bg-background p-5 shadow-lg"
-          >
-            <div className="text-base font-semibold">New task</div>
-            <div className="mt-1 text-xs text-muted-foreground">
-              Add a title and description for this task.
-            </div>
-            <div className="mt-4 space-y-3">
-              <Input
-                value={taskTitle}
-                onChange={(e) => setTaskTitle(e.target.value)}
-                placeholder="Task title…"
-              />
-              <textarea
-                value={taskDescription}
-                onChange={(e) => setTaskDescription(e.target.value)}
-                placeholder="Task description…"
-                className={cn(
-                  "min-h-[120px] w-full rounded-xl border border-input bg-transparent p-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
-                )}
-              />
-              <div className="flex justify-end gap-2">
-                <Button
-                  variant="outline"
-                  type="button"
-                  onClick={() => setIsTaskOpen(false)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="button"
-                  onClick={() => {
-                    onAddTask(taskTitle, taskDescription);
-                    setTaskTitle("");
-                    setTaskDescription("");
-                    setIsTaskOpen(false);
-                  }}
-                >
-                  Create
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : null}
-
-      {isDeleteOpen ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div
-            className="absolute inset-0 bg-black/20"
-            onClick={() => setIsDeleteOpen(false)}
-          />
-          <div
-            role="dialog"
-            aria-modal="true"
-            className="relative z-10 w-full max-w-md rounded-xl border bg-background p-5 shadow-lg"
-          >
-            <div className="text-base font-semibold">Delete list</div>
-            <div className="mt-1 text-xs text-muted-foreground">
-              This will remove the list and all its tasks. This action cannot be undone.
-            </div>
-            <div className="mt-4 flex justify-end gap-2">
-              <Button variant="outline" type="button" onClick={() => setIsDeleteOpen(false)}>
                 Cancel
               </Button>
               <Button
-                variant="destructive"
+                size="sm"
                 type="button"
+                disabled={!taskTitle.trim()}
                 onClick={() => {
-                  onDeleteList();
-                  setIsDeleteOpen(false);
+                  onAddTask(taskTitle, taskDescription);
+                  setTaskTitle("");
+                  setTaskDescription("");
+                  setIsTaskOpen(false);
                 }}
               >
-                Delete
+                Add
               </Button>
             </div>
           </div>
+        ) : (
+          <Button
+            variant="ghost"
+            type="button"
+            className="w-full justify-start"
+            onClick={() => setIsTaskOpen(true)}
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Add task
+          </Button>
+        )}
+      </div>
+      <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete list</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this list? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDeleteOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                onDeleteList();
+                setIsDeleteOpen(false);
+              }}
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={isRenameOpen} onOpenChange={setIsRenameOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Rename list</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <Input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsRenameOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleRename}>Rename</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+function TaskCard({
+  workspaceId,
+  boardId,
+  task,
+}: {
+  workspaceId: Id;
+  boardId: Id;
+  task: Task;
+}) {
+  const [taskTitle, setTaskTitle] = React.useState("");
+  const [taskDescription, setTaskDescription] = React.useState("");
+  const [isTaskOpen, setIsTaskOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    setTaskTitle(task.title);
+    setTaskDescription(task.description);
+  }, [task]);
+
+  const getDueDateStatus = (date: string | undefined) => {
+    if (!date) {
+      return null;
+    }
+    const now = new Date();
+    const dueDate = new Date(date);
+    const diff = dueDate.getTime() - now.getTime();
+    const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    const formattedDate = format(dueDate, "MMM d");
+
+    if (days < 0) {
+      return { text: `Overdue: ${formattedDate}`, color: "bg-red-500" };
+    }
+    if (days <= 7) {
+      return { text: `Due: ${formattedDate}`, color: "bg-yellow-500" };
+    }
+    return { text: formattedDate, color: "bg-gray-500" };
+  };
+
+  const dueDateStatus = getDueDateStatus(task.dueDate);
+
+  return (
+    <Link
+      key={task.id}
+      href={`/workspaces/${workspaceId}/boards/${boardId}/tasks/${task.id}`}
+      className="block rounded-lg border bg-card px-3 py-2 text-sm shadow-sm transition hover:bg-muted/40 cursor-pointer"
+    >
+      <div className="font-medium leading-5">{task.title}</div>
+      {dueDateStatus && (
+        <div className="mt-2">
+          <Badge
+            className={cn("text-white", dueDateStatus.color)}
+          >
+            {dueDateStatus.text}
+          </Badge>
+        </div>
+      )}
+      {task.labels && task.labels.length > 0 ? (
+        <div className="mt-2 flex flex-wrap gap-1">
+          {task.labels.slice(0, 3).map((label) => (
+            <span
+              key={label}
+              className="rounded-full border bg-muted/40 px-2 py-0.5 text-[11px]"
+            >
+              {label}
+            </span>
+          ))}
+          {task.labels.length > 3 ? (
+            <span className="text-[11px] text-muted-foreground">
+              +{task.labels.length - 3}
+            </span>
+          ) : null}
         </div>
       ) : null}
-    </div>
+      {task.description ? (
+        <div className="mt-1 line-clamp-2 text-xs text-muted-foreground">
+          {task.description}
+        </div>
+      ) : null}
+    </Link>
   );
 }
 

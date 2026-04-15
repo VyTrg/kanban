@@ -33,6 +33,7 @@ export type Task = {
   description: string;
   labels: string[];
   members: string[];
+  dueDate?: string;
   createdAt: string;
   updatedAt: string;
 };

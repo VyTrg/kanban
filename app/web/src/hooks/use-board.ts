@@ -34,11 +34,12 @@ type BoardsManagementActions = {
   deleteBoard: (boardId: Id) => void;
   createList: (boardId: Id, title: string) => Id;
   deleteList: (boardId: Id, listId: Id) => void;
+  updateList: (listId: Id, patch: Partial<Pick<List, "title">>) => void;
   createTask: (boardId: Id, listId: Id, title: string, description?: string) => Id;
   deleteTask: (taskId: Id) => void;
   updateTask: (
     taskId: Id,
-    patch: Partial<Pick<Task, "title" | "description" | "listId" | "labels" | "members">>,
+    patch: Partial<Pick<Task, "title" | "description" | "listId" | "labels" | "members" | "dueDate">>,
   ) => void;
 };
 
@@ -189,6 +190,24 @@ export function useBoardsManagement(workspaceId: Id): BoardsManagementSelectors 
     [persist, state],
   );
 
+  const updateList = React.useCallback(
+    (listId: Id, patch: Partial<Pick<List, "title">>) => {
+      const list = state.lists[listId];
+      if (!list) return;
+      const next = structuredClone(state) as BoardsManagementState;
+      const t = nowIso();
+
+      if (typeof patch.title === "string") {
+        next.lists[listId].title = patch.title;
+      }
+
+      next.lists[listId].updatedAt = t;
+      next.boards[list.boardId].updatedAt = t;
+      persist(next);
+    },
+    [persist, state],
+  );
+
   const createTask = React.useCallback(
     (boardId: Id, listId: Id, title: string, description = "") => {
       const list = state.lists[listId];
@@ -219,7 +238,7 @@ export function useBoardsManagement(workspaceId: Id): BoardsManagementSelectors 
   const updateTask = React.useCallback(
     (
       taskId: Id,
-      patch: Partial<Pick<Task, "title" | "description" | "listId" | "labels" | "members">>,
+      patch: Partial<Pick<Task, "title" | "description" | "listId" | "labels" | "members" | "dueDate">>,
     ) => {
       const task = state.tasks[taskId];
       if (!task) return;
@@ -242,6 +261,7 @@ export function useBoardsManagement(workspaceId: Id): BoardsManagementSelectors 
       if (typeof patch.description === "string") next.tasks[taskId].description = patch.description;
       if (Array.isArray(patch.labels)) next.tasks[taskId].labels = patch.labels;
       if (Array.isArray(patch.members)) next.tasks[taskId].members = patch.members;
+      if (patch.dueDate) next.tasks[taskId].dueDate = patch.dueDate;
 
       next.tasks[taskId].updatedAt = t;
       persist(next);
@@ -286,6 +306,7 @@ export function useBoardsManagement(workspaceId: Id): BoardsManagementSelectors 
     deleteBoard,
     createList,
     deleteList,
+    updateList,
     createTask,
     deleteTask,
     updateTask,

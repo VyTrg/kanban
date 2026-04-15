@@ -3,13 +3,16 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Calendar, Trash2, X } from "lucide-react";
+import { Trash2, X, Calendar as CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import type { Id } from "@/lib/board/types";
 import { useBoardsManagement } from "@/hooks/use-board";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Badge } from "@/components/ui/badge";
 
 export function TaskDetailPage({
   workspaceId,
@@ -36,6 +39,9 @@ export function TaskDetailPage({
   const [isDeleteOpen, setIsDeleteOpen] = React.useState(false);
   const [isLabelOpen, setIsLabelOpen] = React.useState(false);
   const [isMemberOpen, setIsMemberOpen] = React.useState(false);
+  const [dueDate, setDueDate] = React.useState<Date | undefined>(
+    task?.dueDate ? new Date(task.dueDate) : undefined,
+  );
 
   React.useEffect(() => {
     setTitle(task?.title ?? "");
@@ -43,7 +49,34 @@ export function TaskDetailPage({
     setListId(task?.listId ?? "");
     setLabels(task?.labels ?? []);
     setMembers(task?.members ?? []);
-  }, [task?.description, task?.labels, task?.listId, task?.members, task?.title]);
+    setDueDate(task?.dueDate ? new Date(task.dueDate) : undefined);
+  }, [
+    task?.description,
+    task?.labels,
+    task?.listId,
+    task?.members,
+    task?.title,
+    task?.dueDate,
+  ]);
+
+  const getDueDateStatus = (date: Date | undefined) => {
+    if (!date) {
+      return { text: "No due date", color: "bg-gray-500" };
+    }
+    const now = new Date();
+    const dueDate = new Date(date);
+    const diff = dueDate.getTime() - now.getTime();
+    const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    const formattedDate = format(dueDate, "PPP");
+
+    if (days < 0) {
+      return { text: `Overdue: ${formattedDate}`, color: "bg-red-500" };
+    }
+    if (days <= 7) {
+      return { text: `Due soon: ${formattedDate}`, color: "bg-yellow-500" };
+    }
+    return { text: formattedDate, color: "bg-gray-500" };
+  };
 
   const addLabel = (value: string) => {
     const nextLabel = value.trim();
@@ -129,18 +162,11 @@ export function TaskDetailPage({
             <div>
               <div className="flex items-center justify-between">
                 <div className="text-sm font-semibold">Description</div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  type="button"
-                  onClick={() => updateTask(taskId, { description })}
-                >
-                  Save
-                </Button>
               </div>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                onBlur={() => updateTask(taskId, { description })}
                 placeholder="Add a description…"
                 className={cn(
                   "mt-2 min-h-[180px] w-full rounded-xl border border-input bg-transparent p-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
@@ -238,9 +264,51 @@ export function TaskDetailPage({
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 rounded-lg border bg-background px-3 py-2 text-sm text-muted-foreground">
-                <Calendar className="size-4" />
-                <span className="truncate">Due date (coming soon)</span>
+              <div>
+                <div className="text-sm font-semibold">Due Date</div>
+                <div className="mt-2">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !dueDate && "text-muted-foreground",
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {dueDate ? format(dueDate, "PPP") : <span>Pick a date</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Input
+                        type="date"
+                        value={dueDate ? format(dueDate, "yyyy-MM-dd") : ""}
+                        onChange={(e) => {
+                          const newDueDate = e.target.value
+                            ? new Date(e.target.value)
+                            : undefined;
+                          setDueDate(newDueDate);
+                          updateTask(taskId, {
+                            dueDate: newDueDate?.toISOString(),
+                          });
+                        }}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                {dueDate && (
+                  <div className="mt-2">
+                    <Badge
+                      className={cn(
+                        "text-white",
+                        getDueDateStatus(dueDate).color,
+                      )}
+                    >
+                      {getDueDateStatus(dueDate).text}
+                    </Badge>
+                  </div>
+                )}
               </div>
               <Button
                 variant="destructive"
