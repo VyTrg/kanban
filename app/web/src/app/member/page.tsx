@@ -80,7 +80,7 @@ export default function MemberPage() {
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-white">
+              <h1 className="text-3xl font-bold">
                 Project Management
               </h1>
               <p className="text-slate-400 mt-1">
@@ -90,7 +90,7 @@ export default function MemberPage() {
             <Button
               onClick={handleInviteMember}
               size="lg"
-              className="gap-2 w-full sm:w-auto"
+              className="gap-2 w-full sm:w-auto border border-muted-700 hover:bg-muted-800 hover:cursor-pointer"
             >
               <UserPlus className="h-4 w-4" />
               Invite Member
@@ -99,7 +99,7 @@ export default function MemberPage() {
 
           {/* Members Table */}
           <div>
-            <h2 className="text-lg font-semibold text-white mb-4">
+            <h2 className="text-lg font-semibold mb-4">
               Active Members
             </h2>
             <MembersTable />
@@ -107,7 +107,7 @@ export default function MemberPage() {
 
           {/* Pending Invitations */}
           <div>
-            <h2 className="text-lg font-semibold text-white mb-4">
+            <h2 className="text-lg font-semibold mb-4">
               Invitations
             </h2>
             <InvitationList
@@ -161,9 +161,9 @@ export default function MemberPage() {
           <div
             role="dialog"
             aria-modal="true"
-            className="relative z-10 w-full max-w-md rounded-xl border bg-black border-muted-700 p-5 shadow-lg"
+            className="relative z-10 w-full max-w-md rounded-xl border bg-muted border-muted-700 p-5 shadow-lg"
           >
-            <div className="text-base font-semibold text-white">Invite Member</div>
+            <div className="text-base font-semibold">Invite Member</div>
             <div className="mt-1 text-xs text-muted-400">
               Send an invitation to join your workspace
             </div>
@@ -178,7 +178,7 @@ export default function MemberPage() {
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
                   placeholder="user@company.com"
-                  className="w-full px-3 py-2 rounded-lg bg-muted-800 border border-muted-700 text-white placeholder-muted-500 text-sm outline-none focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500"
+                  className="w-full px-3 py-2 rounded-lg bg-muted-800 border border-muted-700 placeholder-muted-500 text-sm outline-none focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500"
                 />
               </div>
 
@@ -187,7 +187,7 @@ export default function MemberPage() {
                 <label className="block text-sm font-medium text-muted-300 mb-2">
                   Workspace
                 </label>
-                <div className="w-full px-3 py-2 rounded-lg bg-muted-800 border border-muted-700 text-white text-sm font-medium">
+                <div className="w-full px-3 py-2 rounded-lg bg-muted-800 border border-muted-700 text-sm font-medium">
                   {currentWorkspaceData.name}
                 </div>
               </div>
@@ -200,7 +200,7 @@ export default function MemberPage() {
                 <select
                   value={inviteRole}
                   onChange={(e) => setInviteRole(e.target.value as "Owner" | "Member" | "Observer")}
-                  className="w-full px-3 py-2 rounded-lg bg-muted-800 border border-muted-700 text-white text-sm outline-none focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500"
+                  className="w-full px-3 py-2 rounded-lg bg-muted-800 border border-muted-700 text-sm outline-none focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500"
                 >
                   <option value="Owner">Owner</option>
                   <option value="Member">Member</option>
@@ -214,7 +214,7 @@ export default function MemberPage() {
                   variant="outline"
                   type="button"
                   onClick={() => setIsInviteOpen(false)}
-                  className="bg-muted-800 border-muted-700 text-white hover:bg-muted-700"
+                  className="bg-muted-800 border-muted-700 hover:bg-muted-700"
                 >
                   Cancel
                 </Button>
@@ -222,7 +222,7 @@ export default function MemberPage() {
                   type="button"
                   onClick={handleSendInvite}
                   disabled={!inviteEmail.trim()}
-                  className="bg-blue-600 hover:bg-blue-700 text-white disabled:bg-muted-700 disabled:text-muted-400"
+                  className="bg-gray-800 hover:cursor-pointer disabled:bg-muted-700 disabled:text-muted-400"
                 >
                   Send Invite
                 </Button>
@@ -242,9 +242,9 @@ export default function MemberPage() {
           <div
             role="dialog"
             aria-modal="true"
-            className="relative z-10 w-full max-w-md rounded-xl border bg-muted-700 border-muted-700 p-5 shadow-lg"
+            className="relative z-10 w-full max-w-md rounded-xl border bg-muted p-5 shadow-lg"
           >
-            <div className="text-base font-semibold text-white">Switch Workspace</div>
+            <div className="text-base font-semibold">Switch Workspace</div>
             <div className="mt-1 text-xs text-muted-400">
               Select a workspace to manage members and settings
             </div>
@@ -255,15 +255,15 @@ export default function MemberPage() {
                   onClick={() => handleConfirmWorkspaceSwitch(project.id)}
                   className={`w-full flex items-center justify-between px-4 py-3 rounded-lg border transition-colors ${
                     currentWorkspace === project.id
-                      ? "bg-blue-900 border-blue-700 text-white"
-                      : "bg-muted-800 border-muted-700 text-muted-300 hover:bg-muted-700 hover:border-muted-600"
+                      ? "bg-gray-300 border-gray-700"
+                      : "bg-muted-800 border-muted-700 text-muted-300 hover:bg-muted-700 hover:border-muted-600 hover:cursor-pointer"
                   }`}
                 >
                   <div className="text-left">
                     <p className="font-medium">{project.name}</p>
                   </div>
                   {currentWorkspace === project.id && (
-                    <span className="text-blue-400 text-sm font-semibold">Active</span>
+                    <span className="text-card text-sm font-semibold">Active</span>
                   )}
                 </button>
               ))}
@@ -273,7 +273,7 @@ export default function MemberPage() {
                 variant="outline"
                 type="button"
                 onClick={() => setIsWorkspaceSwitchOpen(false)}
-                className="bg-muted-800 border-muted-700 text-white hover:bg-muted-700"
+                className="bg-muted-800 border-muted-700 hover:bg-muted-700"
               >
                 Close
               </Button>
