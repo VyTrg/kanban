@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { logger } from 'hono/logger';
+import workspaceRoutes from './routes/v1/workspaces';
 
 const app = new Hono();
 
@@ -19,5 +20,8 @@ app.get('/', (c) => {
 app.get('/health', (c) => {
   return c.json({ status: 'ok' });
 });
+
+// V1 Routes
+app.route('/v1/workspaces', workspaceRoutes);
 
 export default app;
