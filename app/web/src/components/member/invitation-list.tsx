@@ -64,10 +64,10 @@ export function InvitationList({
   };
 
   return (
-    <div className="rounded-xl bg-muted-900 border border-muted-700 shadow-lg overflow-hidden">
+    <div className="rounded-xl bg-muted-900 border border-muted-700 shadow-sm overflow-hidden">
       {/* Header */}
-      <div className="px-6 py-4 border-b border-muted-700 bg-card">
-        <p className="text-sm font-semibold text-white">Pending Invitations</p>
+      <div className="px-6 py-4 border-b border-muted-700 bg-muted">
+        <p className="text-sm font-semibold">Pending Invitations</p>
         <p className="text-xs text-muted-400 mt-1">
           {invitations.length} invitation{invitations.length !== 1 ? "s" : ""} pending
         </p>
@@ -83,7 +83,7 @@ export function InvitationList({
             >
               {/* Left: Email, Role, Time, Workspace */}
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">
+                <p className="text-sm font-medium truncate">
                   {invitation.email}
                 </p>
                 <div className="flex items-center gap-2 mt-2 flex-wrap">
@@ -108,7 +108,7 @@ export function InvitationList({
 
               {/* Right: Workspace Name */}
               <div className="shrink-0 text-right">
-                <p className="text-sm font-medium text-slate-200">
+                <p className="text-sm font-medium text-mute-200">
                   {invitation.workspace}
                 </p>
               </div>
@@ -119,10 +119,10 @@ export function InvitationList({
                   variant="outline"
                   size="sm"
                   onClick={() => handleRemoveInvitation(invitation)}
-                  className="h-8 w-8 p-0 hover:bg-red-950 hover:border-red-700"
+                  className="h-8 w-8 p-0 bg-red-600 text-white hover:bg-red-700 hover:border-red-700 hover:cursor-pointer"
                   title="Remove invitation"
                 >
-                  <X className="h-4 w-4 text-red-600" />
+                  <X className="h-4 w-4 text-white hover:text-white" />
                 </Button>
               </div>
             </div>
@@ -144,9 +144,9 @@ export function InvitationList({
           <div
             role="dialog"
             aria-modal="true"
-            className="relative z-10 w-full max-w-md rounded-xl border bg-black p-5 shadow-lg"
+            className="relative z-10 w-full max-w-md rounded-xl border border-muted-700 p-5 shadow-lg bg-muted "
           >
-            <div className="text-base font-semibold text-white">Cancel Invitation</div>
+            <div className="text-base font-semibold">Cancel Invitation</div>
             <div className="mt-1 text-xs text-muted-400">
               Are you sure you want to remove the invitation for {selectedInvitation.email}?
             </div>
@@ -155,14 +155,14 @@ export function InvitationList({
                 variant="outline"
                 type="button"
                 onClick={() => setIsRemoveOpen(false)}
-                className="bg-muted-800 border-muted-700 text-white hover:bg-muted-700"
+                className="bg-muted-800 border-muted-700 hover:bg-muted-900"
               >
                 Cancel
               </Button>
               <Button
                 type="button"
                 onClick={confirmRemove}
-                className="bg-red-600 hover:bg-red-700 text-white"
+                className="bg-red-600 hover:bg-red-700 hover:cursor-pointer"
               >
                 Remove Invitation
               </Button>

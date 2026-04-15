@@ -92,9 +92,9 @@ export function MembersTable({ members = defaultMembers }: MembersTableProps) {
   };
 
   return (
-    <div className="rounded-xl bg-muted-900 border border-muted-700 shadow-lg overflow-hidden">
+    <div className="rounded-xl bg-muted-900 border border-muted-700 shadow-sm overflow-hidden">
       {/* Header */}
-      <div className="grid grid-cols-4 gap-4 px-6 py-4 bg-card border-b border-muted-700">
+      <div className="grid grid-cols-4 gap-4 px-6 py-4 bg-muted border-b border-muted-700">
         <p className="text-xs font-semibold text-muted-300 uppercase tracking-wide">
           Member
         </p>
@@ -121,13 +121,13 @@ export function MembersTable({ members = defaultMembers }: MembersTableProps) {
               <div
                 className={cn(
                   "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg font-semibold text-sm text-white",
-                  "bg-gradient-to-br from-blue-500 to-blue-600"
+                  "bg-gradient-to-br from-black to-zinc-600"
                 )}
               >
                 {getInitials(member.name)}
               </div>
               <div className="min-w-0">
-                <p className="text-sm font-medium text-white truncate">
+                <p className="text-sm font-medium truncate">
                   {member.name}
                 </p>
                 <p className="text-xs text-muted-400 truncate">
@@ -183,11 +183,11 @@ export function MembersTable({ members = defaultMembers }: MembersTableProps) {
                 variant="outline"
                 size="sm"
                 onClick={() => handleDeactivate(member)}
-                className="h-8 px-2 text-xs gap-1 hover:bg-red-950 hover:border-red-700"
+                className="h-8 px-2 text-xs gap-1 bg-red-600 text-white hover:bg-red-700h over:border-red-700 hover:cursor-pointer"
                 title="Deactivate member"
               >
-                <LogOut className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Remove</span>
+                <LogOut className="h-3.5 w-3.5 text-white" />
+                <span className="hidden sm:inline text-white">Remove</span>
               </Button>
             </div>
           </div>
@@ -204,9 +204,9 @@ export function MembersTable({ members = defaultMembers }: MembersTableProps) {
           <div
             role="dialog"
             aria-modal="true"
-            className="relative z-10 w-full max-w-md rounded-xl border bg-muted-900 border-muted-700 p-5 shadow-lg"
+            className="relative z-10 w-full max-w-md rounded-xl border border-muted-700 bg-muted p-5 shadow-lg"
           >
-            <div className="text-base font-semibold text-white">Remove Member</div>
+            <div className="text-base font-semibold">Remove Member</div>
             <div className="mt-1 text-xs text-muted-400">
               Are you sure you want to remove {selectedMember.name} from this workspace?
             </div>
@@ -215,14 +215,14 @@ export function MembersTable({ members = defaultMembers }: MembersTableProps) {
                 variant="outline"
                 type="button"
                 onClick={() => setIsDeactivateOpen(false)}
-                className="bg-muted-800 border-muted-700 text-white hover:bg-muted-700"
+                className="bg-muted-800 border-muted-700 hover:bg-muted-700"
               >
                 Cancel
               </Button>
               <Button
                 type="button"
                 onClick={confirmDeactivate}
-                className="bg-red-600 hover:bg-red-700 text-white"
+                className="bg-red-600 hover:bg-red-700"
               >
                 Remove Member
               </Button>
@@ -241,9 +241,9 @@ export function MembersTable({ members = defaultMembers }: MembersTableProps) {
           <div
             role="dialog"
             aria-modal="true"
-            className="relative z-10 w-full max-w-md rounded-xl border bg-muted-700 border-muted-700 p-5 shadow-lg"
+            className="relative z-10 w-full max-w-md rounded-xl border bg-muted border-muted-700 p-5 shadow-lg"
           >
-            <div className="text-base font-semibold text-white">Change Role</div>
+            <div className="text-base font-semibold">Change Role</div>
             <div className="mt-1 text-xs text-muted-400">
               Update role for {selectedMember.name}
             </div>
@@ -255,7 +255,7 @@ export function MembersTable({ members = defaultMembers }: MembersTableProps) {
                 <select
                   value={selectedRole}
                   onChange={(e) => setSelectedRole(e.target.value as "Owner" | "Member" | "Observer")}
-                  className="w-full px-3 py-2 rounded-lg bg-muted-800 border border-muted-700 text-white text-sm outline-none focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500/50"
+                  className="w-full px-3 py-2 rounded-lg bg-muted-800 border border-muted-700 text-sm outline-none focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500/50"
                 >
                   <option value="Owner">Owner</option>
                   <option value="Member">Member</option>
@@ -267,14 +267,14 @@ export function MembersTable({ members = defaultMembers }: MembersTableProps) {
                   variant="outline"
                   type="button"
                   onClick={() => setIsRoleSwitchOpen(false)}
-                  className="bg-muted-800 border-muted-700 text-white hover:bg-muted-700"
+                  className="bg-muted-800 border-muted-700 hover:cursor-pointer"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="button"
                   onClick={confirmRoleSwitch}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  className="bg-gray-600 hover:bg-gray-700 hover:cursor-pointer"
                 >
                   Update Role
                 </Button>

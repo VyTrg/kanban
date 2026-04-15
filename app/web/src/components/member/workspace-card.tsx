@@ -21,7 +21,7 @@ export function WorkspaceCard({
   onSwitchWorkspace,
 }: WorkspaceCardProps) {
   return (
-    <div className="rounded-xl bg-muted-900 border border-black shadow-lg p-6 space-y-6">
+    <div className="rounded-xl bg-muted-700 border border-muted-700 shadow-sm p-6 space-y-6">
       {/* Header with Lock Icon */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -37,7 +37,7 @@ export function WorkspaceCard({
         <div
           className={cn(
             "flex h-16 w-16 shrink-0 items-center justify-center rounded-lg font-bold text-lg text-white",
-            "bg-gradient-to-br from-indigo-500 to-purple-600 shadow-md"
+            "bg-gradient-to-br from-black to-zinc-600 shadow-md"
           )}
         >
           {initials}
@@ -46,7 +46,7 @@ export function WorkspaceCard({
           <p className="text-xs font-medium text-muted-400 uppercase tracking-wide">
             Workspace
           </p>
-          <h3 className="text-lg font-semibold text-white truncate">
+          <h3 className="text-lg font-semibold truncate">
             {title}
           </h3>
         </div>
@@ -61,7 +61,7 @@ export function WorkspaceCard({
           <label className="block text-xs font-medium text-muted-300 mb-2">
             Title
           </label>
-          <div className="w-full px-3 py-2 rounded-lg bg-muted-800 border border-muted-700 text-white text-sm font-medium">
+          <div className="w-full px-3 py-2 rounded-lg bg-muted-800 border border-muted-700 text-sm font-medium">
             {title}
           </div>
         </div>
@@ -77,8 +77,8 @@ export function WorkspaceCard({
       </div>
 
       {/* Locked Message */}
-      <div className="rounded-lg bg-blue-950 border border-blue-800 p-3">
-        <p className="text-xs text-blue-200">
+      <div className="rounded-lg bg-card border border-muted-700 p-3">
+        <p className="text-xs text-muted-400 italic">
           This workspace information is managed by administrators. Contact your workspace owner to make changes.
         </p>
       </div>
@@ -87,7 +87,7 @@ export function WorkspaceCard({
       <Button
         onClick={onSwitchWorkspace}
         variant="outline"
-        className="w-full bg-muted-700 border-muted-700 text-white hover:bg-muted-600 gap-2"
+        className="w-full bg-muted-900 border-muted-700 hover:bg-muted hover:cursor-pointer gap-2"
       >
         <ArrowRightLeft className="h-4 w-4" />
         Switch Workspace
