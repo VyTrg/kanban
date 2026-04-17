@@ -86,7 +86,7 @@ export class WorkspaceService {
    * Cập nhật thông tin Workspace
    */
   static async update(publicId: string, userId: string, input: UpdateWorkspaceInput) {
-    // Kiểm tra quyền (chỉ Admin mới được sửa - tạm thời kiểm tra đơn giản)
+    // Kiểm tra quyền admin
     const [membership] = await db
       .select()
       .from(workspaceMembers)
@@ -95,18 +95,16 @@ export class WorkspaceService {
         and(
           eq(workspaces.publicId, publicId),
           eq(workspaceMembers.userId, userId),
-          eq(workspaceMembers.role, "admin")
+          eq(workspaceMembers.role, "admin"),
+          isNull(workspaces.deletedAt)
         )
       );
 
     if (!membership) {
-      throw new Error("Bạn không có quyền cập nhật workspace này hoặc workspace không tồn tại");
+      throw new Error("FORBIDDEN: Bạn không có quyền cập nhật workspace này hoặc workspace không tồn tại");
     }
 
     const updateData: any = { ...input, updatedAt: new Date() };
-    if (input.name && !input.slug) {
-        // Nếu đổi tên mà không truyền slug mới, ta có thể cập nhật slug (tùy logic UX)
-    }
 
     return await db
       .update(workspaces)
@@ -119,18 +117,31 @@ export class WorkspaceService {
    * Xóa mềm Workspace (Soft Delete)
    */
   static async softDelete(publicId: string, userId: string) {
+    // Kiểm tra quyền admin (chỉ admin mới được xóa)
+    const [membership] = await db
+      .select()
+      .from(workspaceMembers)
+      .innerJoin(workspaces, eq(workspaces.id, workspaceMembers.workspaceId))
+      .where(
+        and(
+          eq(workspaces.publicId, publicId),
+          eq(workspaceMembers.userId, userId),
+          eq(workspaceMembers.role, "admin"),
+          isNull(workspaces.deletedAt)
+        )
+      );
+
+    if (!membership) {
+      throw new Error("FORBIDDEN: Bạn không có quyền xóa workspace này");
+    }
+
     return await db
       .update(workspaces)
       .set({
         deletedAt: new Date(),
         deletedBy: userId,
       })
-      .where(
-        and(
-          eq(workspaces.publicId, publicId),
-          eq(workspaces.createdBy, userId) // Chỉ chủ sở hữu thực sự mới được xóa
-        )
-      )
+      .where(eq(workspaces.publicId, publicId))
       .returning();
   }
 }

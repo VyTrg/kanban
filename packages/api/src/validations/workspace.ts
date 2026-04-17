@@ -10,7 +10,6 @@ export const createWorkspaceSchema = z.object({
   description: z.string()
     .max(1000, "Mô tả quá dài (tối đa 1000 ký tự)")
     .optional(),
-  // Slug có thể để trống, ta sẽ tự sinh nếu không có
   slug: z.string()
     .min(1)
     .max(255)
@@ -34,8 +33,18 @@ export const inviteMemberSchema = z.object({
 });
 
 /**
+ * Schema dùng khi cập nhật role thành viên
+ */
+export const updateMemberRoleSchema = z.object({
+  role: z.enum(["admin", "member", "guest"], {
+    errorMap: () => ({ message: "Vai trò phải là admin, member hoặc guest" }),
+  }),
+});
+
+/**
  * Types suy diễn từ Schema để dùng trong code
  */
 export type CreateWorkspaceInput = z.infer<typeof createWorkspaceSchema>;
 export type UpdateWorkspaceInput = z.infer<typeof updateWorkspaceSchema>;
 export type InviteMemberInput = z.infer<typeof inviteMemberSchema>;
+export type UpdateMemberRoleInput = z.infer<typeof updateMemberRoleSchema>;
