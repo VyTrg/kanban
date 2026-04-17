@@ -14,49 +14,49 @@ import { useBoardsManagement } from "@/hooks/use-board";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 
-export function TaskDetailPage({
+export function CardDetailPage({
   workspaceId,
   boardId,
-  taskId,
+  cardId,
 }: {
   workspaceId: Id;
   boardId: Id;
-  taskId: Id;
+  cardId: Id;
 }) {
   const router = useRouter();
-  const { workspace, getTask, getListsForBoard, updateTask, deleteTask } = useBoardsManagement(workspaceId);
+  const { workspace, getCard, getListsForBoard, updateCard, deleteCard } = useBoardsManagement(workspaceId);
 
-  const task = getTask(taskId);
+  const card = getCard(cardId);
   const lists = getListsForBoard(boardId);
 
-  const [title, setTitle] = React.useState(task?.title ?? "");
-  const [description, setDescription] = React.useState(task?.description ?? "");
-  const [listId, setListId] = React.useState(task?.listId ?? "");
-  const [labels, setLabels] = React.useState<string[]>(task?.labels ?? []);
-  const [members, setMembers] = React.useState<string[]>(task?.members ?? []);
+  const [title, setTitle] = React.useState(card?.title ?? "");
+  const [description, setDescription] = React.useState(card?.description ?? "");
+  const [listId, setListId] = React.useState(card?.listId ?? "");
+  const [labels, setLabels] = React.useState<string[]>(card?.labels ?? []);
+  const [members, setMembers] = React.useState<string[]>(card?.members ?? []);
   const [labelInput, setLabelInput] = React.useState("");
   const [memberInput, setMemberInput] = React.useState("");
   const [isDeleteOpen, setIsDeleteOpen] = React.useState(false);
   const [isLabelOpen, setIsLabelOpen] = React.useState(false);
   const [isMemberOpen, setIsMemberOpen] = React.useState(false);
   const [dueDate, setDueDate] = React.useState<Date | undefined>(
-    task?.dueDate ? new Date(task.dueDate) : undefined,
+    card?.dueDate ? new Date(card.dueDate) : undefined,
   );
 
   React.useEffect(() => {
-    setTitle(task?.title ?? "");
-    setDescription(task?.description ?? "");
-    setListId(task?.listId ?? "");
-    setLabels(task?.labels ?? []);
-    setMembers(task?.members ?? []);
-    setDueDate(task?.dueDate ? new Date(task.dueDate) : undefined);
+    setTitle(card?.title ?? "");
+    setDescription(card?.description ?? "");
+    setListId(card?.listId ?? "");
+    setLabels(card?.labels ?? []);
+    setMembers(card?.members ?? []);
+    setDueDate(card?.dueDate ? new Date(card.dueDate) : undefined);
   }, [
-    task?.description,
-    task?.labels,
-    task?.listId,
-    task?.members,
-    task?.title,
-    task?.dueDate,
+    card?.description,
+    card?.labels,
+    card?.listId,
+    card?.members,
+    card?.title,
+    card?.dueDate,
   ]);
 
   const getDueDateStatus = (date: Date | undefined) => {
@@ -84,13 +84,13 @@ export function TaskDetailPage({
     const next = [...labels, nextLabel];
     setLabels(next);
     setLabelInput("");
-    updateTask(taskId, { labels: next });
+    updateCard(cardId, { labels: next });
   };
 
   const removeLabel = (value: string) => {
     const next = labels.filter((label) => label !== value);
     setLabels(next);
-    updateTask(taskId, { labels: next });
+    updateCard(cardId, { labels: next });
   };
 
   const addMember = (value: string) => {
@@ -99,13 +99,13 @@ export function TaskDetailPage({
     const next = [...members, nextMember];
     setMembers(next);
     setMemberInput("");
-    updateTask(taskId, { members: next });
+    updateCard(cardId, { members: next });
   };
 
   const removeMember = (value: string) => {
     const next = members.filter((member) => member !== value);
     setMembers(next);
-    updateTask(taskId, { members: next });
+    updateCard(cardId, { members: next });
   };
 
   const workspaceMembers = workspace?.members ?? [];
@@ -113,11 +113,11 @@ export function TaskDetailPage({
     name.toLowerCase().includes(memberInput.trim().toLowerCase()),
   );
 
-  if (!task) {
+  if (!card) {
     return (
       <div className="p-6">
         <div className="rounded-xl border bg-card p-8 text-sm text-muted-foreground">
-          Task not found.
+          Card not found.
         </div>
       </div>
     );
@@ -128,8 +128,8 @@ export function TaskDetailPage({
       <div className="sticky top-0 z-10 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="flex items-center justify-between gap-3 px-6 py-4">
           <div className="min-w-0">
-            <div className="text-xs text-muted-foreground">Task</div>
-            <div className="truncate text-lg font-semibold tracking-tight">{task.title}</div>
+            <div className="text-xs text-muted-foreground">Card</div>
+            <div className="truncate text-lg font-semibold tracking-tight">{card.title}</div>
           </div>
           <div className="flex items-center gap-2">
             <Button
@@ -154,7 +154,7 @@ export function TaskDetailPage({
                 <Input
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  onBlur={() => updateTask(taskId, { title })}
+                  onBlur={() => updateCard(cardId, { title })}
                 />
               </div>
             </div>
@@ -166,7 +166,7 @@ export function TaskDetailPage({
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                onBlur={() => updateTask(taskId, { description })}
+                onBlur={() => updateCard(cardId, { description })}
                 placeholder="Add a description…"
                 className={cn(
                   "mt-2 min-h-[180px] w-full rounded-xl border border-input bg-transparent p-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
@@ -185,7 +185,7 @@ export function TaskDetailPage({
                 onChange={(e) => {
                   const next = e.target.value;
                   setListId(next);
-                  updateTask(taskId, { listId: next });
+                  updateCard(cardId, { listId: next });
                 }}
                 className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
               >
@@ -197,7 +197,7 @@ export function TaskDetailPage({
               </select>
             </div>
             <div className="mt-3 text-xs text-muted-foreground">
-              Moving a task updates its list column.
+              Moving a card updates its list column.
             </div>
           </div>
 
@@ -289,7 +289,7 @@ export function TaskDetailPage({
                             ? new Date(e.target.value)
                             : undefined;
                           setDueDate(newDueDate);
-                          updateTask(taskId, {
+                          updateCard(cardId, {
                             dueDate: newDueDate?.toISOString(),
                           });
                         }}
@@ -317,7 +317,7 @@ export function TaskDetailPage({
                 onClick={() => setIsDeleteOpen(true)}
               >
                 <Trash2 />
-                Delete task
+                Delete card
               </Button>
             </div>
           </div>
@@ -342,7 +342,7 @@ export function TaskDetailPage({
             aria-modal="true"
             className="relative z-10 w-full max-w-md rounded-xl border bg-background p-5 shadow-lg"
           >
-            <div className="text-base font-semibold">Delete task</div>
+            <div className="text-base font-semibold">Delete card</div>
             <div className="mt-1 text-xs text-muted-foreground">
               This action cannot be undone.
             </div>
@@ -354,7 +354,7 @@ export function TaskDetailPage({
                 variant="destructive"
                 type="button"
                 onClick={() => {
-                  deleteTask(taskId);
+                  deleteCard(cardId);
                   setIsDeleteOpen(false);
                   router.push(`/workspaces/${workspaceId}/boards/${boardId}`);
                 }}
@@ -379,7 +379,7 @@ export function TaskDetailPage({
           >
             <div className="text-base font-semibold">Add label</div>
             <div className="mt-1 text-xs text-muted-foreground">
-              Enter a label name to attach it to this task.
+              Enter a label name to attach it to this card.
             </div>
             <div className="mt-4 space-y-3">
               <Input
@@ -419,7 +419,7 @@ export function TaskDetailPage({
           >
             <div className="text-base font-semibold">Add member</div>
             <div className="mt-1 text-xs text-muted-foreground">
-              Enter a member name to attach it to this task.
+              Enter a member name to attach it to this card.
             </div>
             <div className="mt-4 space-y-3">
               <Input

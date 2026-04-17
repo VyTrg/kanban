@@ -26,7 +26,7 @@ import type { Id } from "@/lib/board/types";
 import { useBoardsManagement } from "@/hooks/use-board";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
-import { Task } from "@/lib/board/types";
+import { Card } from "@/lib/board/types";
 
 export function BoardView({
   workspaceId,
@@ -35,7 +35,7 @@ export function BoardView({
   workspaceId: Id;
   boardId: Id;
 }) {
-  const { getBoard, getListsForBoard, getTasksForList, isLoading, initBoard, createList, createTask, deleteList, updateList } =
+  const { getBoard, getListsForBoard, getCardsForList, isLoading, initBoard, createList, createCard, deleteList, updateList } =
     useBoardsManagement(workspaceId);
   const board = getBoard(boardId);
   const lists = getListsForBoard(boardId);
@@ -119,8 +119,8 @@ export function BoardView({
                 boardId={boardId}
                 listId={list.id}
                 title={list.title}
-                tasks={getTasksForList(list.id)}
-                onAddTask={(t, d) => createTask(boardId, list.id, t, d)}
+                cards={getCardsForList(list.id)}
+                onAddCard={(t, d) => createCard(boardId, list.id, t, d)}
                 onDeleteList={() => deleteList(boardId, list.id)}
                 onUpdateList={(title) => updateList(list.id, { title })}
               />
@@ -176,8 +176,8 @@ function ListColumn({
   boardId,
   listId,
   title,
-  tasks,
-  onAddTask,
+  cards,
+  onAddCard,
   onDeleteList,
   onUpdateList,
 }: {
@@ -185,15 +185,15 @@ function ListColumn({
   boardId: Id;
   listId: Id;
   title: string;
-  tasks: Task[];
-  onAddTask: (title: string, description: string) => void;
+  cards: Card[];
+  onAddCard: (title: string, description: string) => void;
   onDeleteList: () => void;
   onUpdateList: (title: string) => void;
 }) {
   const [newTitle, setNewTitle] = React.useState(title);
-  const [taskTitle, setTaskTitle] = React.useState("");
-  const [taskDescription, setTaskDescription] = React.useState("");
-  const [isTaskOpen, setIsTaskOpen] = React.useState(false);
+  const [cardTitle, setCardTitle] = React.useState("");
+  const [cardDescription, setCardDescription] = React.useState("");
+  const [isCardOpen, setIsCardOpen] = React.useState(false);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = React.useState(false);
   const [isRenameOpen, setIsRenameOpen] = React.useState(false);
@@ -214,7 +214,7 @@ function ListColumn({
       <div className="flex items-center justify-between p-3">
         <div className="flex items-center gap-2">
           <div className="text-sm font-medium">{title}</div>
-          <Badge variant="secondary">{tasks.length}</Badge>
+          <Badge variant="secondary">{cards.length}</Badge>
         </div>
         <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
           <DropdownMenuTrigger asChild>
@@ -233,17 +233,17 @@ function ListColumn({
         </DropdownMenu>
       </div>
       <div className="flex flex-col gap-3 p-3">
-        {tasks.map((task) => (
-          <TaskCard key={task.id} workspaceId={workspaceId} boardId={boardId} task={task} />
+        {cards.map((card) => (
+          <CardCard key={card.id} workspaceId={workspaceId} boardId={boardId} card={card} />
         ))}
       </div>
       <div className="p-3 pt-0">
-        {isTaskOpen ? (
+        {isCardOpen ? (
           <div className="space-y-3 rounded-lg border bg-background p-3">
             <Input
-              value={taskTitle}
-              onChange={(e) => setTaskTitle(e.target.value)}
-              placeholder="Task title…"
+              value={cardTitle}
+              onChange={(e) => setCardTitle(e.target.value)}
+              placeholder="Card title…"
               className="h-8"
             />
             <div className="flex justify-end gap-2">
@@ -252,9 +252,9 @@ function ListColumn({
                 size="sm"
                 type="button"
                 onClick={() => {
-                  setIsTaskOpen(false);
-                  setTaskTitle("");
-                  setTaskDescription("");
+                  setIsCardOpen(false);
+                  setCardTitle("");
+                  setCardDescription("");
                 }}
               >
                 Cancel
@@ -262,12 +262,12 @@ function ListColumn({
               <Button
                 size="sm"
                 type="button"
-                disabled={!taskTitle.trim()}
+                disabled={!cardTitle.trim()}
                 onClick={() => {
-                  onAddTask(taskTitle, taskDescription);
-                  setTaskTitle("");
-                  setTaskDescription("");
-                  setIsTaskOpen(false);
+                  onAddCard(cardTitle, cardDescription);
+                  setCardTitle("");
+                  setCardDescription("");
+                  setIsCardOpen(false);
                 }}
               >
                 Add
@@ -279,10 +279,10 @@ function ListColumn({
             variant="ghost"
             type="button"
             className="w-full justify-start"
-            onClick={() => setIsTaskOpen(true)}
+            onClick={() => setIsCardOpen(true)}
           >
             <Plus className="mr-2 h-4 w-4" />
-            Add task
+            Add card
           </Button>
         )}
       </div>
@@ -330,23 +330,23 @@ function ListColumn({
   );
 }
 
-function TaskCard({
+function CardCard({
   workspaceId,
   boardId,
-  task,
+  card,
 }: {
   workspaceId: Id;
   boardId: Id;
-  task: Task;
+  card: Card;
 }) {
-  const [taskTitle, setTaskTitle] = React.useState("");
-  const [taskDescription, setTaskDescription] = React.useState("");
-  const [isTaskOpen, setIsTaskOpen] = React.useState(false);
+  const [cardTitle, setCardTitle] = React.useState("");
+  const [cardDescription, setCardDescription] = React.useState("");
+  const [isCardOpen, setIsCardOpen] = React.useState(false);
 
   React.useEffect(() => {
-    setTaskTitle(task.title);
-    setTaskDescription(task.description);
-  }, [task]);
+    setCardTitle(card.title);
+    setCardDescription(card.description);
+  }, [card]);
 
   const getDueDateStatus = (date: string | undefined) => {
     if (!date) {
@@ -367,15 +367,15 @@ function TaskCard({
     return { text: formattedDate, color: "bg-gray-500" };
   };
 
-  const dueDateStatus = getDueDateStatus(task.dueDate);
+  const dueDateStatus = getDueDateStatus(card.dueDate);
 
   return (
     <Link
-      key={task.id}
-      href={`/workspaces/${workspaceId}/boards/${boardId}/tasks/${task.id}`}
+      key={card.id}
+      href={`/workspaces/${workspaceId}/boards/${boardId}/cards/${card.id}`}
       className="block rounded-lg border bg-card px-3 py-2 text-sm shadow-sm transition hover:bg-muted/40 cursor-pointer"
     >
-      <div className="font-medium leading-5">{task.title}</div>
+      <div className="font-medium leading-5">{card.title}</div>
       {dueDateStatus && (
         <div className="mt-2">
           <Badge
@@ -385,9 +385,9 @@ function TaskCard({
           </Badge>
         </div>
       )}
-      {task.labels && task.labels.length > 0 ? (
+      {card.labels && card.labels.length > 0 ? (
         <div className="mt-2 flex flex-wrap gap-1">
-          {task.labels.slice(0, 3).map((label) => (
+          {card.labels.slice(0, 3).map((label) => (
             <span
               key={label}
               className="rounded-full border bg-muted/40 px-2 py-0.5 text-[11px]"
@@ -395,16 +395,16 @@ function TaskCard({
               {label}
             </span>
           ))}
-          {task.labels.length > 3 ? (
+          {card.labels.length > 3 ? (
             <span className="text-[11px] text-muted-foreground">
-              +{task.labels.length - 3}
+              +{card.labels.length - 3}
             </span>
           ) : null}
         </div>
       ) : null}
-      {task.description ? (
+      {card.description ? (
         <div className="mt-1 line-clamp-2 text-xs text-muted-foreground">
-          {task.description}
+          {card.description}
         </div>
       ) : null}
     </Link>

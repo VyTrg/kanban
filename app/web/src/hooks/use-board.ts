@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import type { Board, Id, BoardsManagementState, List, Task, Workspace } from "../lib/board/types";
+import type { Board, Id, BoardsManagementState, List, Card, Workspace } from "../lib/board/types";
 import { loadWorkspaceState, saveWorkspaceState } from "../lib/board/storage";
 import { seedBoard, seedDefaultLists, seedWorkspace } from "../lib/board/seed";
 import { mockState } from "../lib/board/mockWorkspace";
@@ -35,11 +35,11 @@ type BoardsManagementActions = {
   createList: (boardId: Id, title: string) => Id;
   deleteList: (boardId: Id, listId: Id) => void;
   updateList: (listId: Id, patch: Partial<Pick<List, "title">>) => void;
-  createTask: (boardId: Id, listId: Id, title: string, description?: string) => Id;
-  deleteTask: (taskId: Id) => void;
-  updateTask: (
-    taskId: Id,
-    patch: Partial<Pick<Task, "title" | "description" | "listId" | "labels" | "members" | "dueDate">>,
+  createCard: (boardId: Id, listId: Id, title: string, description?: string) => Id;
+  deleteCard: (cardId: Id) => void;
+  updateCard: (
+    cardId: Id,
+    patch: Partial<Pick<Card, "title" | "description" | "listId" | "labels" | "members" | "dueDate">>,
   ) => void;
 };
 
@@ -48,13 +48,13 @@ type BoardsManagementSelectors = {
   boards: Board[];
   getBoard: (boardId: Id) => Board | null;
   getListsForBoard: (boardId: Id) => List[];
-  getTasksForList: (listId: Id) => Task[];
-  getTask: (taskId: Id) => Task | null;
+  getCardsForList: (listId: Id) => Card[];
+  getCard: (cardId: Id) => Card | null;
   isLoading: boolean;
 };
 
 export function useBoardsManagement(workspaceId: Id): BoardsManagementSelectors & BoardsManagementActions {
-  const [state, setState] = React.useState<BoardsManagementState>({ workspaces: {}, boards: {}, lists: {}, tasks: {} });
+  const [state, setState] = React.useState<BoardsManagementState>({ workspaces: {}, boards: {}, lists: {}, cards: {} });
   const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
@@ -89,16 +89,16 @@ export function useBoardsManagement(workspaceId: Id): BoardsManagementSelectors 
     [state.boards, state.lists],
   );
 
-  const getTasksForList = React.useCallback(
+  const getCardsForList = React.useCallback(
     (listId: Id) => {
       const list = state.lists[listId];
       if (!list) return [];
-      return list.taskIds.map((id) => state.tasks[id]).filter(Boolean);
+      return list.cardIds.map((id) => state.cards[id]).filter(Boolean);
     },
-    [state.lists, state.tasks],
+    [state.lists, state.cards],
   );
 
-  const getTask = React.useCallback((taskId: Id) => state.tasks[taskId] ?? null, [state.tasks]);
+  const getCard = React.useCallback((cardId: Id) => state.cards[cardId] ?? null, [state.cards]);
 
   const createBoard = React.useCallback(
     (title: string) => {
@@ -135,8 +135,8 @@ export function useBoardsManagement(workspaceId: Id): BoardsManagementSelectors 
       for (const listId of board.listIds) {
         const list = next.lists[listId];
         if (list) {
-          for (const taskId of list.taskIds) {
-            delete next.tasks[taskId];
+          for (const cardId of list.cardIds) {
+            delete next.cards[cardId];
           }
         }
         delete next.lists[listId];
@@ -160,7 +160,7 @@ export function useBoardsManagement(workspaceId: Id): BoardsManagementSelectors 
       const next = structuredClone(state) as BoardsManagementState;
       const id = makeId("list");
       const t = nowIso();
-      next.lists[id] = { id, boardId, title: title.trim() || "Untitled list", taskIds: [], createdAt: t, updatedAt: t };
+      next.lists[id] = { id, boardId, title: title.trim() || "Untitled list", cardIds: [], createdAt: t, updatedAt: t };
       next.boards[boardId].listIds.push(id);
       next.boards[boardId].updatedAt = t;
       persist(next);
@@ -178,8 +178,8 @@ export function useBoardsManagement(workspaceId: Id): BoardsManagementSelectors 
       const next = structuredClone(state) as BoardsManagementState;
       const t = nowIso();
 
-      for (const taskId of list.taskIds) {
-        delete next.tasks[taskId];
+      for (const cardId of list.cardIds) {
+        delete next.cards[cardId];
       }
 
       delete next.lists[listId];
@@ -208,25 +208,25 @@ export function useBoardsManagement(workspaceId: Id): BoardsManagementSelectors 
     [persist, state],
   );
 
-  const createTask = React.useCallback(
+  const createCard = React.useCallback(
     (boardId: Id, listId: Id, title: string, description = "") => {
       const list = state.lists[listId];
       if (!list) return "";
       const next = structuredClone(state) as BoardsManagementState;
-      const id = makeId("task");
+      const id = makeId("card");
       const t = nowIso();
-      next.tasks[id] = {
+      next.cards[id] = {
         id,
         boardId,
         listId,
-        title: title.trim() || "Untitled task",
+        title: title.trim() || "Untitled card",
         description,
         labels: [],
         members: [],
         createdAt: t,
         updatedAt: t,
       };
-      next.lists[listId].taskIds.push(id);
+      next.lists[listId].cardIds.push(id);
       next.lists[listId].updatedAt = t;
       next.boards[boardId].updatedAt = t;
       persist(next);
@@ -235,59 +235,64 @@ export function useBoardsManagement(workspaceId: Id): BoardsManagementSelectors 
     [persist, state],
   );
 
-  const updateTask = React.useCallback(
+  const updateCard = React.useCallback(
     (
-      taskId: Id,
-      patch: Partial<Pick<Task, "title" | "description" | "listId" | "labels" | "members" | "dueDate">>,
+      cardId: Id,
+      patch: Partial<Pick<Card, "title" | "description" | "listId" | "labels" | "members" | "dueDate">>,
     ) => {
-      const task = state.tasks[taskId];
-      if (!task) return;
+      const card = state.cards[cardId];
+      if (!card) return;
       const next = structuredClone(state) as BoardsManagementState;
       const t = nowIso();
 
-      if (patch.listId && patch.listId !== task.listId) {
-        const fromList = next.lists[task.listId];
+      if (patch.listId && patch.listId !== card.listId) {
+        const fromList = next.lists[card.listId];
         const toList = next.lists[patch.listId];
         if (fromList && toList) {
-          fromList.taskIds = fromList.taskIds.filter((id) => id !== taskId);
-          toList.taskIds.push(taskId);
+          fromList.cardIds = fromList.cardIds.filter((id) => id !== cardId);
+          toList.cardIds.push(cardId);
           fromList.updatedAt = t;
           toList.updatedAt = t;
-          next.tasks[taskId].listId = patch.listId;
+          next.cards[cardId].listId = patch.listId;
         }
       }
 
-      if (typeof patch.title === "string") next.tasks[taskId].title = patch.title;
-      if (typeof patch.description === "string") next.tasks[taskId].description = patch.description;
-      if (Array.isArray(patch.labels)) next.tasks[taskId].labels = patch.labels;
-      if (Array.isArray(patch.members)) next.tasks[taskId].members = patch.members;
-      if (patch.dueDate) next.tasks[taskId].dueDate = patch.dueDate;
+      if (typeof patch.title === "string") {
+        const newTitle = patch.title.trim();
+        if (newTitle) {
+          next.cards[cardId].title = newTitle;
+        }
+      }
+      if (typeof patch.description === "string") next.cards[cardId].description = patch.description;
+      if (Array.isArray(patch.labels)) next.cards[cardId].labels = patch.labels;
+      if (Array.isArray(patch.members)) next.cards[cardId].members = patch.members;
+      if (patch.dueDate) next.cards[cardId].dueDate = patch.dueDate;
 
-      next.tasks[taskId].updatedAt = t;
+      next.cards[cardId].updatedAt = t;
       persist(next);
     },
     [persist, state],
   );
 
-  const deleteTask = React.useCallback(
-    (taskId: Id) => {
-      const task = state.tasks[taskId];
-      if (!task) return;
+  const deleteCard = React.useCallback(
+    (cardId: Id) => {
+      const card = state.cards[cardId];
+      if (!card) return;
 
       const next = structuredClone(state) as BoardsManagementState;
       const t = nowIso();
 
-      const list = next.lists[task.listId];
+      const list = next.lists[card.listId];
       if (list) {
-        list.taskIds = list.taskIds.filter((id) => id !== taskId);
+        list.cardIds = list.cardIds.filter((id) => id !== cardId);
         list.updatedAt = t;
       }
 
-      if (next.boards[task.boardId]) {
-        next.boards[task.boardId].updatedAt = t;
+      if (next.boards[card.boardId]) {
+        next.boards[card.boardId].updatedAt = t;
       }
 
-      delete next.tasks[taskId];
+      delete next.cards[cardId];
       persist(next);
     },
     [persist, state],
@@ -298,8 +303,8 @@ export function useBoardsManagement(workspaceId: Id): BoardsManagementSelectors 
     boards,
     getBoard,
     getListsForBoard,
-    getTasksForList,
-    getTask,
+    getCardsForList,
+    getCard,
     isLoading,
     createBoard,
     initBoard,
@@ -307,9 +312,9 @@ export function useBoardsManagement(workspaceId: Id): BoardsManagementSelectors 
     createList,
     deleteList,
     updateList,
-    createTask,
-    deleteTask,
-    updateTask,
+    createCard,
+    deleteCard,
+    updateCard,
   };
 }
 
