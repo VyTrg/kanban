@@ -15,7 +15,7 @@ export function InsightCard({
   description = "Your team is performing exceptionally well this sprint. Keep up the momentum!",
 }: InsightCardProps) {
   return (
-    <div className="rounded-xl bg-gradient-to-br from-slate-900 to-slate-800 shadow-lg p-6 text-white space-y-6">
+    <div className="rounded-xl bg-muted-900 from-muted-100 to-muted-800 border border-muted-700 shadow-sm p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center gap-2">
         <Zap className="h-5 w-5 text-amber-400" />
@@ -25,7 +25,7 @@ export function InsightCard({
       {/* Metrics */}
       <div className="space-y-4">
         <div className="space-y-1">
-          <p className="text-xs text-slate-400 uppercase tracking-wide font-medium">
+          <p className="text-xs text-muted-400 uppercase tracking-wide font-medium">
             Team Velocity
           </p>
           <div className="flex items-baseline gap-2">
@@ -39,18 +39,18 @@ export function InsightCard({
         </div>
 
         <div className="space-y-1">
-          <p className="text-xs text-slate-400 uppercase tracking-wide font-medium">
+          <p className="text-xs text-muted-400 uppercase tracking-wide font-medium">
             Focus Score
           </p>
           <div className="flex items-baseline gap-2">
             <span className="text-2xl font-bold">{focusScore}</span>
-            <span className="text-xs text-slate-400">/100</span>
+            <span className="text-xs text-muted-400">/100</span>
           </div>
         </div>
       </div>
 
       {/* Description */}
-      <p className="text-xs italic text-slate-300 leading-relaxed">
+      <p className="text-xs italic text-muted-300 leading-relaxed">
         {description}
       </p>
     </div>
